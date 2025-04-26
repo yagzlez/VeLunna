@@ -58,6 +58,30 @@ html {
   transform: none;
 }
 
+#searchInput {
+  position: absolute;
+  top: 15px;
+  right: 60px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+  width: 0px;
+  opacity: 0;
+  pointer-events: none;
+  transition: width 0.4s ease, opacity 0.4s ease;
+}
+
+#searchInput.active {
+  width: 150px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+
 /* Hero */
 .hero {
   width: 100%;
