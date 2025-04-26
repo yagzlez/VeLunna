@@ -24,9 +24,17 @@ window.addEventListener("scroll", () => {
 const searchIcon = document.getElementById("searchIcon");
 const searchInput = document.getElementById("searchInput");
 
-searchIcon.addEventListener("click", () => {
+searchIcon.addEventListener("click", (event) => {
+  event.stopPropagation(); // Stop click from reaching the body
   searchInput.classList.toggle("active");
   if (searchInput.classList.contains("active")) {
     searchInput.focus();
+  }
+});
+
+// Close search input if clicking outside
+document.addEventListener("click", (event) => {
+  if (!searchInput.contains(event.target) && !searchIcon.contains(event.target)) {
+    searchInput.classList.remove("active");
   }
 });
