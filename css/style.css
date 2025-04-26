@@ -189,29 +189,34 @@ html {
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .category-section {
-    flex-direction: column;
+    flex-direction: row; /* <-- Keep them side by side */
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
     margin: 20px auto;
     padding: 0 10px;
+    max-width: 600px; /* Keep them nicely centered */
   }
 
   .category {
-    flex: none;
-    width: 100%;
-    max-width: 400px;
-    height: auto;
+    flex: 1 1 45%;
+    min-width: 140px;
+    max-width: 250px;
+    height: 50vh;
+    margin: 10px;
   }
 
   .category-image {
-    height: 60vh;
+    height: 50vh;
   }
 
   .category-text {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   .newsletter {
-    max-width: 600px;
-    margin: 40px auto;
+    max-width: 100%;
+    margin: 40px 0;
     padding: 50px 20px;
     text-align: center;
   }
