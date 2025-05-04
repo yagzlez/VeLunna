@@ -1,0 +1,113 @@
+/* Page background */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', sans-serif;
+    background-color: #121212;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  /* Centering wrapper */
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* White login box */
+  .auth-box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 320px;
+    text-align: center;
+  }
+  
+  /* Velunna logo */
+  .auth-logo {
+    width: 120px;
+    margin-bottom: 30px;
+  }
+  
+  /* Email & password inputs */
+  .auth-input {
+    width: 100%;
+    padding: 12px 14px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  
+  /* Main login button */
+  .auth-button {
+    background-color: #000;
+    color: #fff;
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  /* "or" separator */
+  .separator {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+  }
+  
+  .separator span {
+    background-color: #fff;
+    padding: 0 10px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .separator::before {
+    content: "";
+    height: 1px;
+    background: #ccc;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    z-index: 0;
+  }
+  
+  /* Google login button */
+  .google-button {
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+    cursor: pointer;
+  }
+  
+  .google-button img {
+    height: 45px;
+    width: auto;
+  }
+  
+  /* Footer */
+  .auth-footer {
+    margin-top: 25px;
+    font-size: 14px;
+  }
+  
+  .auth-footer a {
+    color: #000;
+    text-decoration: underline;
+  }
+  
