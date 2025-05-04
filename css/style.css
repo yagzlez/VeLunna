@@ -397,4 +397,27 @@ html {
   cursor: pointer;
 }
 
-/*Test
+/*login button*/
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+.login-btn {
+  background-color: black;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-family: 'Didot', serif;
+  text-decoration: none;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #333;
+}
