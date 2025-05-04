@@ -13,12 +13,16 @@ setInterval(showNextSlide, 4000);
 
 // Shrink the navbar and logo on scroll
 window.addEventListener("scroll", () => {
-  if (window.scrollY > 50) {
-    navbar.classList.add("shrink");
-  } else {
-    navbar.classList.remove("shrink");
+  const navbar = document.getElementById("navbar");
+  if (!document.body.classList.contains("static-logo")) {
+    if (window.scrollY > 50) {
+      navbar.classList.add("shrink");
+    } else {
+      navbar.classList.remove("shrink");
+    }
   }
 });
+
 
 
 const searchIcon = document.getElementById("searchIcon");
@@ -33,8 +37,25 @@ searchIcon.addEventListener("click", (event) => {
 });
 
 // Close search input if clicking outside
-document.addEventListener("click", (event) => {
-  if (!searchInput.contains(event.target) && !searchIcon.contains(event.target)) {
-    searchInput.classList.remove("active");
-  }
+document.addEventListener("DOMContentLoaded", function () {
+  // Open modal
+  document.querySelectorAll(".product img").forEach(img => {
+    img.addEventListener("click", () => {
+      const modal = document.getElementById("productModal");
+      const modalImg = document.getElementById("modalImg");
+      const modalTitle = document.getElementById("modalTitle");
+      const caption = document.getElementById("modalDescription");
+
+      modal.style.display = "block";
+      modalImg.src = img.src;
+      modalTitle.innerText = img.alt;
+      caption.innerText = `Detailed description of ${img.alt}. Sizes: S, M, L. Materials: 100% Organic Cotton.`;
+    });
+  });
+
+  // Close modal
+  const modalClose = document.getElementById("modalClose");
+  modalClose.addEventListener("click", () => {
+    document.getElementById("productModal").style.display = "none";
+  });
 });
