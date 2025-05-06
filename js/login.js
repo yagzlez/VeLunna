@@ -1,35 +1,38 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – Velunna</title>
+  <link rel="stylesheet" href="css/login.css" />
+ 
 
-const supabase = createClient(
-  'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ' 
-);
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <img src="images/Velunna.png" alt="Velunna Logo" class="auth-logo" />
 
-document.querySelector('.auth-button').addEventListener('click', async () => {
-  const email = document.querySelector('input[type="email"]').value;
-  const password = document.querySelector('input[type="password"]').value;
+      <input type="email" placeholder="Email" class="auth-input" />
+      <input type="password" placeholder="Password" class="auth-input" />
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      <button class="auth-button">Log in</button>
 
-  if (error?.message === "Email not confirmed") {
-    alert("Please check your inbox and confirm your email.");
-    return;
-  }
+      <div class="separator">
+        <span>or</span>
+      </div>
 
-  if (error) {
-    alert(error.message);
-  } else {
-    window.location.href = "index.html";
-  }
-});
+      <button class="google-button">
+        <img src="images/web_neutral_rd_SI@4x.png" alt="Google Icon" />
+      </button>
 
-document.querySelector('.google-button').addEventListener('click', async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: 'https://www.velunna.co.uk/index.html'
-    }
-  });
+      <div class="auth-footer">
+        <a href="signup.html">Don't have an account? Sign up</a>
+      </div>
+    </div>
+  </div>
 
-  if (error) alert(error.message);
-});
+  <script type="module" src="js/login.js"></script>
+  
+</body>
+</html>
