@@ -118,15 +118,24 @@ body {
   }
   
 
-  .password-popup {
-    background-color: #f9edbe;
-    border: 1px solid #f0c36d;
-    padding: 10px 20px;
-    font-family: sans-serif;
-    font-size: 0.9rem;
-    width: fit-content;
-    margin-top: 8px;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  .password-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  .password-wrapper input {
+    width: 100%;
+    padding-right: 40px;
+  }
+  .password-wrapper span {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    user-select: none;
+  }
+  .error-message {
+    color: red;
+    margin-bottom: 10px;
   }
   
