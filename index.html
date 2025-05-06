@@ -10,10 +10,10 @@
 
   <header class="navbar" id="navbar">
     <img src="images/Velunna.png" alt="Velunna Logo" class="main-logo" id="mainLogo">
-    <div class="nav-icons">
-      <span id="searchIcon">&#128269;</span>
-      <input type="text" id="searchInput" placeholder="Search..." />
-    </div>    
+    <div class="nav-icons" id="nav-login">
+      <!-- Content will be inserted here by JS -->
+    </div>
+        
 
 
     <div class="nav-icons">
@@ -46,7 +46,7 @@
     <div class="category-section">
       <div class="category">
 
-        <a href="women.html">
+        <a href="woman.html">
           <div class="category-image" style="background-image: url('images/model_woman.png');">
             <div class="category-text">WOMEN</div>
           </div>
@@ -73,5 +73,29 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabase = createClient(
+      'https://nhfuyokthqnzbmhbfdjd.supabase.co',
+      'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30'
+    );
+  </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const loginContainer = document.getElementById('nav-login');
+
+    if (user) {
+      const username = user.user_metadata?.firstName || 'User';
+      loginContainer.innerHTML = `<span class="welcome-text">Welcome, ${username}</span>`;
+    } else {
+      loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
+    }
+  });
+</script>
+
+
 </body>
 </html>
