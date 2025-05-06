@@ -74,27 +74,25 @@
 
   <script src="js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
+  
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     const supabase = createClient(
       'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-      'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ' 
+
     );
-  </script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-
+  
     const loginContainer = document.getElementById('nav-login');
-
+  
+    const { data: { user } } = await supabase.auth.getUser();
+  
     if (user) {
-      const username = user.user_metadata?.firstName || 'User';
-      loginContainer.innerHTML = `<span class="welcome-text">Welcome, ${username}</span>`;
-    } else {
-      loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
+      const name = user.user_metadata?.first_name || 'User';
+      loginContainer.outerHTML = `<span class="welcome-text">Welcome, ${name}</span>`;
     }
-  });
-</script>
+  </script>
+  
 
 
 </body>
