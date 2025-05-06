@@ -11,13 +11,12 @@ document.getElementById('toggleEye').addEventListener('click', () => {
   pwd.type = pwd.type === 'password' ? 'text' : 'password';
 });
 
-// Password strength check
+// Password strength validation
 function isPasswordStrong(password) {
   return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*.,?])[A-Za-z\d!@#\$%\^&\*.,?]{8,}$/.test(password);
 }
 
-// Sign-up logic
-document.querySelector('.auth-button').addEventListener('click', async () => {
+document.getElementById('signupBtn').addEventListener('click', async () => {
   const firstName = document.getElementById('firstName').value.trim();
   const surname = document.getElementById('surname').value.trim();
   const phone = document.getElementById('phone').value.trim();
@@ -26,6 +25,7 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
   const confirmPassword = document.getElementById('confirmPassword').value;
   const message = document.getElementById('passwordMessage');
 
+  // Password validations
   if (password !== confirmPassword) {
     message.textContent = "Passwords do not match.";
     message.style.display = "block";
@@ -33,23 +33,25 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
   }
 
   if (!isPasswordStrong(password)) {
-    message.textContent = "Password must be at least 8 characters, include a capital, number, and symbol.";
+    message.textContent = "Password must be at least 8 characters, include a capital letter, a number, and a special character.";
     message.style.display = "block";
     return;
   }
 
   message.style.display = "none";
 
+  // Check if email or phone already exists
   const { data: existingUsers } = await supabase
     .from('users')
     .select('email, phone')
     .or(`email.eq.${email},phone.eq.${phone}`);
 
-  if (existingUsers.length > 0) {
-    alert("Email or phone already used.");
+  if (existingUsers && existingUsers.length > 0) {
+    alert("Email or phone number already in use.");
     return;
   }
 
+  // Create the user
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
@@ -77,11 +79,11 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     });
   }
 
-  alert("Account created! Please check your email to confirm.");
+  alert("✅ Account created! Please check your email to confirm.");
   window.location.href = "login.html";
 });
 
-// Google Sign Up
+// Google sign-up
 document.querySelector('.google-button').addEventListener('click', async () => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
