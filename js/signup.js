@@ -54,8 +54,16 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
 
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
-    password
+    password,
+    options: {
+      data: {
+        first_name: firstName,
+        surname,
+        phone
+      }
+    }
   });
+  
 
   if (authError) {
     alert(authError.message);
@@ -85,3 +93,21 @@ document.querySelector('.google-button').addEventListener('click', async () => {
 
   if (error) alert(error.message);
 });
+
+
+document.getElementById('password').addEventListener('blur', () => {
+  const confirmBox = document.getElementById('confirmPassword');
+  confirmBox.focus();
+
+  const message = document.createElement('div');
+  message.classList.add('password-popup');
+  message.textContent = 'Please confirm your password to make sure it’s correct.';
+  
+  confirmBox.parentElement.appendChild(message);
+
+  setTimeout(() => {
+    message.remove();
+  }, 4000);
+});
+
+
