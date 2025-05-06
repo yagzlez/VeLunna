@@ -19,10 +19,10 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     password,
     options: {
       data: {
-        first_name: firstName,
+        firstName: firstName,
         surname: surname,
         phone: phone
-      }
+      }      
     }
   });
 
