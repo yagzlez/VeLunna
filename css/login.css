@@ -118,3 +118,15 @@ body {
   }
   
 
+  .password-popup {
+    background-color: #f9edbe;
+    border: 1px solid #f0c36d;
+    padding: 10px 20px;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    width: fit-content;
+    margin-top: 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  
