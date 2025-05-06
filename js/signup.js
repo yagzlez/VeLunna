@@ -1,38 +1,22 @@
-
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const supabase = createClient(
   'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ' 
-
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
 );
 
-// Eye toggle
+// Toggle password visibility
 document.getElementById('toggleEye').addEventListener('click', () => {
   const pwd = document.getElementById('password');
   pwd.type = pwd.type === 'password' ? 'text' : 'password';
 });
 
-// Password strength check
+// Password strength checker
 function isPasswordStrong(password) {
   return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*.,?])[A-Za-z\d!@#\$%\^&\*.,?]{8,}$/.test(password);
 }
 
-// Blur event: ask to confirm password
-document.getElementById('password').addEventListener('blur', () => {
-  const reentered = prompt('Please re-enter your password to confirm:');
-  const password = document.getElementById('password').value;
-  const message = document.getElementById('passwordMessage');
-  
-  if (reentered !== password) {
-    message.textContent = "Passwords do not match.";
-    message.style.display = "block";
-  } else {
-    message.style.display = "none";
-  }
-});
-
-// Signup
+// Sign up
 document.querySelector('.auth-button').addEventListener('click', async () => {
   const firstName = document.getElementById('firstName').value.trim();
   const surname = document.getElementById('surname').value.trim();
@@ -41,12 +25,24 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
   const password = document.getElementById('password').value;
   const message = document.getElementById('passwordMessage');
 
+  message.style.display = 'none';
+
+  // Validate strength
   if (!isPasswordStrong(password)) {
-    message.textContent = "Password must be at least 8 characters, include a capital, number, and symbol.";
+    message.textContent = "Password must be at least 8 characters, include a capital letter, a number, and a symbol.";
     message.style.display = "block";
     return;
   }
 
+  // Confirm password popup
+  const confirmPassword = prompt("Please re-enter your password to confirm:");
+  if (confirmPassword !== password) {
+    message.textContent = "Passwords do not match.";
+    message.style.display = "block";
+    return;
+  }
+
+  // Check for duplicates
   const { data: existingUsers } = await supabase
     .from('users')
     .select('email, phone')
@@ -57,15 +53,12 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     return;
   }
 
+  // Register
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: {
-        first_name: firstName,
-        surname,
-        phone
-      }
+      data: { first_name: firstName, surname, phone }
     }
   });
 
@@ -74,6 +67,7 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     return;
   }
 
+  // Insert into user table
   if (authData.user) {
     await supabase.from('users').insert({
       id: authData.user.id,
@@ -84,7 +78,7 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     });
   }
 
-  alert("Account created! Please check your email to confirm.");
+  alert("Account created! Check your email to confirm.");
   window.location.href = "login.html";
 });
 
