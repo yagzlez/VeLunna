@@ -70,22 +70,44 @@
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  
     const supabase = createClient(
       'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...YOUR_FULL_ANON_KEY...'
+      'YOUR_ANON_KEY_HERE'
     );
-
+  
     const loginContainer = document.getElementById('nav-login');
+  
     const { data: { user } } = await supabase.auth.getUser();
-
+  
     if (user) {
-      const meta = user.user_metadata || {};
-      const name = meta.first_name || meta.full_name || meta.name || user.email.split('@')[0];
-      loginContainer.innerHTML = `<span class="welcome-text">Welcome, ${name}</span>`;
+      // Get name from metadata or fallback to email username
+      const metadata = user.user_metadata || {};
+      let name =
+        metadata.first_name ||
+        metadata.full_name ||
+        metadata.name ||
+        user.email?.split('@')[0] ||
+        'User';
+  
+      // Clean up display (e.g. lowercase → capitalize first letter)
+      name = name.charAt(0).toUpperCase() + name.slice(1);
+  
+      loginContainer.innerHTML = `
+        <span class="welcome-text">Welcome, ${name}</span>
+        <button id="logoutBtn" style="margin-left: 10px;">Logout</button>
+      `;
+  
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.reload();
+      });
+  
     } else {
       loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
     }
   </script>
+  
 
 </body>
 </html>
