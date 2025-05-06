@@ -16,12 +16,12 @@
       <input type="tel" placeholder="Phone number" class="auth-input" id="phone" />
       <input type="email" placeholder="Email" class="auth-input" id="email" />
 
-      <div class="password-wrapper">
+      <div class="password-wrapper" style="position: relative;">
         <input type="password" placeholder="Password" class="auth-input" id="password" />
-        <span id="toggleEye">👁</span>
+        <span id="toggleEye" style="position: absolute; right: 10px; top: 14px; cursor: pointer;">👁</span>
       </div>
 
-      <p id="passwordMessage" class="error-message" style="display:none;"></p>
+      <p id="passwordMessage" class="error-message" style="display:none; color: red;"></p>
 
       <button class="auth-button">Sign up</button>
 
