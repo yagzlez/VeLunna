@@ -1,5 +1,5 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const supabase = createClient(
   'https://nhfuyokthqnzbmhbfdjd.supabase.co',
@@ -7,40 +7,45 @@ const supabase = createClient(
 
 );
 
-document.getElementById('showPassword').addEventListener('change', (e) => {
+// Eye toggle
+document.getElementById('toggleEye').addEventListener('click', () => {
   const pwd = document.getElementById('password');
-  const confirm = document.getElementById('confirmPassword');
-  const type = e.target.checked ? 'text' : 'password';
-  pwd.type = type;
-  confirm.type = type;
+  pwd.type = pwd.type === 'password' ? 'text' : 'password';
 });
 
+// Password strength check
 function isPasswordStrong(password) {
   return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*.,?])[A-Za-z\d!@#\$%\^&\*.,?]{8,}$/.test(password);
 }
 
+// Blur event: ask to confirm password
+document.getElementById('password').addEventListener('blur', () => {
+  const reentered = prompt('Please re-enter your password to confirm:');
+  const password = document.getElementById('password').value;
+  const message = document.getElementById('passwordMessage');
+  
+  if (reentered !== password) {
+    message.textContent = "Passwords do not match.";
+    message.style.display = "block";
+  } else {
+    message.style.display = "none";
+  }
+});
+
+// Signup
 document.querySelector('.auth-button').addEventListener('click', async () => {
   const firstName = document.getElementById('firstName').value.trim();
   const surname = document.getElementById('surname').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
   const message = document.getElementById('passwordMessage');
 
-  if (password !== confirmPassword) {
-    message.textContent = "Passwords do not match.";
-    message.style.display = "block";
-    return;
-  }
-
   if (!isPasswordStrong(password)) {
-    message.textContent = "Password must be at least 8 characters, include a capital letter, a number, and a special character.";
+    message.textContent = "Password must be at least 8 characters, include a capital, number, and symbol.";
     message.style.display = "block";
     return;
   }
-
-  message.style.display = "none";
 
   const { data: existingUsers } = await supabase
     .from('users')
@@ -48,7 +53,7 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     .or(`email.eq.${email},phone.eq.${phone}`);
 
   if (existingUsers.length > 0) {
-    alert("Email or phone number already in use.");
+    alert("Email or phone already used.");
     return;
   }
 
@@ -63,26 +68,27 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
       }
     }
   });
-  
 
   if (authError) {
     alert(authError.message);
     return;
   }
 
-  // Add to 'users' table
-  await supabase.from('users').insert({
-    id: authData.user.id,
-    email,
-    first_name: firstName,
-    surname,
-    phone
-  });
+  if (authData.user) {
+    await supabase.from('users').insert({
+      id: authData.user.id,
+      email,
+      first_name: firstName,
+      surname,
+      phone
+    });
+  }
 
   alert("Account created! Please check your email to confirm.");
   window.location.href = "login.html";
 });
 
+// Google sign-up
 document.querySelector('.google-button').addEventListener('click', async () => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -93,21 +99,3 @@ document.querySelector('.google-button').addEventListener('click', async () => {
 
   if (error) alert(error.message);
 });
-
-
-document.getElementById('password').addEventListener('blur', () => {
-  const confirmBox = document.getElementById('confirmPassword');
-  confirmBox.focus();
-
-  const message = document.createElement('div');
-  message.classList.add('password-popup');
-  message.textContent = 'Please confirm your password to make sure it’s correct.';
-  
-  confirmBox.parentElement.appendChild(message);
-
-  setTimeout(() => {
-    message.remove();
-  }, 4000);
-});
-
-
