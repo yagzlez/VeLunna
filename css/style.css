@@ -421,3 +421,11 @@ html {
 .login-btn:hover {
   background-color: #333;
 }
+
+.welcome-text {
+  font-size: 18px;
+  color: #111;
+  margin-left: 10px;
+  font-family: inherit;
+}
+
