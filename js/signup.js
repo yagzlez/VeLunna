@@ -11,38 +11,35 @@ document.getElementById('toggleEye').addEventListener('click', () => {
   pwd.type = pwd.type === 'password' ? 'text' : 'password';
 });
 
-// Password strength checker
+// Password strength check
 function isPasswordStrong(password) {
   return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*.,?])[A-Za-z\d!@#\$%\^&\*.,?]{8,}$/.test(password);
 }
 
-// Sign up
+// Sign-up logic
 document.querySelector('.auth-button').addEventListener('click', async () => {
   const firstName = document.getElementById('firstName').value.trim();
   const surname = document.getElementById('surname').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
   const message = document.getElementById('passwordMessage');
 
-  message.style.display = 'none';
-
-  // Validate strength
-  if (!isPasswordStrong(password)) {
-    message.textContent = "Password must be at least 8 characters, include a capital letter, a number, and a symbol.";
-    message.style.display = "block";
-    return;
-  }
-
-  // Confirm password popup
-  const confirmPassword = prompt("Please re-enter your password to confirm:");
-  if (confirmPassword !== password) {
+  if (password !== confirmPassword) {
     message.textContent = "Passwords do not match.";
     message.style.display = "block";
     return;
   }
 
-  // Check for duplicates
+  if (!isPasswordStrong(password)) {
+    message.textContent = "Password must be at least 8 characters, include a capital, number, and symbol.";
+    message.style.display = "block";
+    return;
+  }
+
+  message.style.display = "none";
+
   const { data: existingUsers } = await supabase
     .from('users')
     .select('email, phone')
@@ -53,12 +50,15 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     return;
   }
 
-  // Register
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { first_name: firstName, surname, phone }
+      data: {
+        first_name: firstName,
+        surname: surname,
+        phone
+      }
     }
   });
 
@@ -67,7 +67,6 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     return;
   }
 
-  // Insert into user table
   if (authData.user) {
     await supabase.from('users').insert({
       id: authData.user.id,
@@ -78,11 +77,11 @@ document.querySelector('.auth-button').addEventListener('click', async () => {
     });
   }
 
-  alert("Account created! Check your email to confirm.");
+  alert("Account created! Please check your email to confirm.");
   window.location.href = "login.html";
 });
 
-// Google sign-up
+// Google Sign Up
 document.querySelector('.google-button').addEventListener('click', async () => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
