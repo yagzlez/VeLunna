@@ -77,6 +77,7 @@
     const supabase = createClient(
       'https://nhfuyokthqnzbmhbfdjd.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ' 
+
     );
   
     const loginContainer = document.getElementById('nav-login');
@@ -111,7 +112,7 @@
       const logout = document.getElementById('logoutBtn');
   
       toggle.addEventListener('click', () => {
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        menu.classList.toggle('open');
       });
   
       logout.addEventListener('click', async () => {
@@ -119,20 +120,21 @@
         window.location.reload();
       });
   
-      // Optional: hide menu when clicking outside
+      // Hide on outside click
       document.addEventListener('click', (e) => {
         if (!loginContainer.contains(e.target)) {
-          menu.style.display = 'none';
+          menu.classList.remove('open');
         }
       });
   
     } else {
       loginContainer.innerHTML = `
-        <span id="searchIcon">🔍</span>
+        <span id="searchIcon" style="cursor:pointer;">🔍</span>
         <a href="login.html" class="login-btn">Log in</a>
       `;
     }
   </script>
+  
   
 </body>
 </html>
