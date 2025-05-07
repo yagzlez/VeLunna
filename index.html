@@ -69,45 +69,49 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-  
-    const supabase = createClient(
-      'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    );
-  
-    const loginContainer = document.getElementById('nav-login');
-  
-    const { data: { user } } = await supabase.auth.getUser();
-  
-    if (user) {
-      // Get name from metadata or fallback to email username
-      const metadata = user.user_metadata || {};
-      let name =
-        metadata.first_name ||
-        metadata.full_name ||
-        metadata.name ||
-        user.email?.split('@')[0] ||
-        'User';
-  
-      // Clean up display (e.g. lowercase → capitalize first letter)
-      name = name.charAt(0).toUpperCase() + name.slice(1);
-  
-      loginContainer.innerHTML = `
-        <span class="welcome-text">Welcome, ${name}</span>
-        <button id="logoutBtn" style="margin-left: 10px;">Logout</button>
-      `;
-  
-      document.getElementById('logoutBtn').addEventListener('click', async () => {
-        await supabase.auth.signOut();
-        window.location.reload();
-      });
-  
-    } else {
-      loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
-    }
-  </script>
+  const supabase = createClient(
+    'https://nhfuyokthqnzbmhbfdjd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
+
+  );
+
+  const loginContainer = document.getElementById('nav-login');
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    const metadata = user.user_metadata || {};
+    let name =
+      metadata.first_name ||
+      metadata.full_name ||
+      metadata.name ||
+      user.email?.split('@')[0] ||
+      'User';
+
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+
+    // Show welcome message and logout button
+    loginContainer.innerHTML = `
+      <span class="welcome-text">Welcome, ${name}</span>
+      <button id="logoutBtn" style="margin-left: 10px;">Logout</button>
+    `;
+
+    // Hide original login button if still in DOM
+    const loginBtn = document.querySelector('.login-btn');
+    if (loginBtn) loginBtn.style.display = 'none';
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.reload();
+    });
+
+  } else {
+    // If not logged in, keep login button
+    loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
+  }
+</script>
+
   
 
 </body>
