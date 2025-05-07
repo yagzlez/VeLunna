@@ -36,12 +36,14 @@ html {
 }
 
 .nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
   position: absolute;
-  top: 20px;
+  top: 30px;
   right: 30px;
-  color: #000;
-  z-index: 1001;
 }
+
 
 .navbar.shrink {
   height: 70px;
@@ -443,7 +445,9 @@ html {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  margin-left: 10px;
 }
+
 
 .welcome-toggle {
   cursor: pointer;
@@ -492,4 +496,48 @@ html {
 
 .dropdown-menu button:hover {
   background: #f0f0f0;
+}
+
+
+.nav-left {
+  left: 30px;
+  right: auto;
+  justify-content: flex-start;
+}
+
+.nav-right {
+  right: 30px;
+  left: auto;
+  justify-content: flex-end;
+}
+
+
+.product-img-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.product-img-wrapper img {
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.product-img-wrapper.sold-out img {
+  filter: grayscale(100%) blur(1.2px);
+  opacity: 0.6;
+}
+
+.sold-overlay {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 5px 12px;
+  border-radius: 6px;
+  text-transform: uppercase;
 }
