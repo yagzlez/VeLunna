@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Men - Velunna</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="static-logo">
+
+  <!-- Navbar with logo, search, and login -->
+  <header class="navbar shrink" id="navbar">
+    <a href="index.html">
+      <img src="images/Velunna.png" alt="Velunna Logo" class="main-logo" id="mainLogo">
+    </a>
+    <div class="nav-icons">
+      <span id="searchIcon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Search..." />
+      <div id="nav-login"></div>
+    </div>
+  </header>   
+
+  <!-- Product Gallery -->
+  <main class="product-gallery">
+    <div class="product">
+      <img src="images/work-170197474-bucket-hat.jpg" alt="Urban Bucket Hat">
+      <p>Urban Bucket Hat</p>
+    </div>
+    <div class="product">
+      <img src="images/work-170197474-bucket-hat.jpg" alt="Casual Bucket Hat">
+      <p>Casual Bucket Hat</p>
+    </div>
+    <div class="product">
+      <img src="images/work-170197474-bucket-hat.jpg" alt="Street Bucket Hat">
+      <p>Street Bucket Hat</p>
+    </div>
+    <div class="product">
+      <img src="images/work-170197474-bucket-hat.jpg" alt="Retro Bucket Hat">
+      <p>Retro Bucket Hat</p>
+    </div>
+    <div class="product">
+      <img src="images/work-170197474-bucket-hat.jpg" alt="Minimalist Bucket Hat">
+      <p>Minimalist Bucket Hat</p>
+    </div>
+    <div class="product">
+      <img src="images/work-170197474-bucket-hat.jpg" alt="Classic Bucket Hat">
+      <p>Classic Bucket Hat</p>
+    </div>
+  </main>
+
+  <!-- Modal Preview -->
+  <div id="productModal" class="modal">
+    <div class="modal-content-wrapper">
+      <span class="modal-close" id="modalClose">&times;</span>
+      <div class="modal-left">
+        <img class="modal-img" id="modalImg" src="" alt="Product" />
+      </div>
+      <div class="modal-right">
+        <h2 id="modalTitle">Urban Bucket Hat</h2>
+        <p id="modalDescription">
+          100% cotton bucket hat, breathable and foldable. Available in S, M, and L. Stylish for any outfit.
+        </p>
+        <label for="sizeSelect">Choose Size:</label>
+        <select id="sizeSelect">
+          <option value="S">Small</option>
+          <option value="M">Medium</option>
+          <option value="L">Large</option>
+        </select>
+        <div class="modal-buttons">
+          <button class="wishlist-btn">♡ Add to Wishlist</button>
+          <button class="basket-btn">🛒 Add to Basket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient(
+      'https://nhfuyokthqnzbmhbfdjd.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
+    );
+
+    const loginContainer = document.getElementById('nav-login');
+
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const name = user.user_metadata?.first_name || user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+        loginContainer.innerHTML = `
+          <div class="welcome-container">
+            <button class="welcome-toggle" onclick="toggleDropdown()">Welcome, ${name} <span>&#x25BE;</span></button>
+            <div class="dropdown-menu" id="userDropdown">
+              <button onclick="logout()">Logout</button>
+            </div>
+          </div>
+        `;
+      } else {
+        loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
+      }
+    }
+
+    loadUser();
+
+    window.toggleDropdown = function () {
+      const menu = document.getElementById('userDropdown');
+      menu.classList.toggle('open');
+    };
+
+    window.logout = async function () {
+      await supabase.auth.signOut();
+      window.location.reload();
+    };
+
+    // Toggle search input
+    const searchIcon = document.getElementById('searchIcon');
+    const searchInput = document.getElementById('searchInput');
+    searchIcon.addEventListener('click', () => {
+      searchInput.classList.toggle('active');
+      searchInput.focus();
+    });
+  </script>
+</body>
+</html>
