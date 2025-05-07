@@ -10,25 +10,15 @@
 
   <header class="navbar" id="navbar">
     <img src="images/Velunna.png" alt="Velunna Logo" class="main-logo" id="mainLogo">
-
-    <div class="nav-icons">
-      <i class="fas fa-search" onclick="toggleSearch()"></i>
-      <a href="login.html" class="user-icon">
-        <i class="fas fa-user"></i>
-      </a>
-    </div>
-
-    <div class="nav-icons" id="nav-login">
-      <!-- Dynamic content added by script -->
-    </div>
-    
-
+  
     <div class="nav-icons">
       <span id="searchIcon">&#128269;</span>
       <input type="text" id="searchInput" placeholder="Search..." />
-      <a href="login.html" class="login-btn">Log in</a>
+  
+      <div id="nav-login"></div>
     </div>
   </header>
+  
 
   <section class="hero">
     <div class="carousel">
@@ -73,67 +63,54 @@
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-  
     const supabase = createClient(
       'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ' 
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
 
     );
   
     const loginContainer = document.getElementById('nav-login');
-    const { data: { user } } = await supabase.auth.getUser();
   
-    if (user) {
-      const metadata = user.user_metadata || {};
-      let name =
-        metadata.first_name ||
-        metadata.full_name ||
-        metadata.name ||
-        user.email?.split('@')[0] ||
-        'User';
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser();
   
-      name = name.charAt(0).toUpperCase() + name.slice(1);
+      if (user) {
+        const name = user.user_metadata?.first_name || user.user_metadata?.full_name || user.user_metadata?.name || 'User';
   
-      loginContainer.innerHTML = `
-        <span id="searchIcon" style="cursor:pointer;">🔍</span>
-  
-        <div class="welcome-container">
-          <button class="welcome-toggle" id="welcomeToggle">
-            Welcome, ${name} ⌄
-          </button>
-          <div class="dropdown-menu" id="userMenu">
-            <button id="logoutBtn">Logout</button>
+        loginContainer.innerHTML = `
+          <div class="welcome-container">
+            <button class="welcome-toggle" onclick="toggleDropdown()">Welcome, ${name} <span>&#x25BE;</span></button>
+            <div class="dropdown-menu" id="userDropdown">
+              <button onclick="logout()">Logout</button>
+            </div>
           </div>
-        </div>
-      `;
-  
-      const toggle = document.getElementById('welcomeToggle');
-      const menu = document.getElementById('userMenu');
-      const logout = document.getElementById('logoutBtn');
-  
-      toggle.addEventListener('click', () => {
-        menu.classList.toggle('open');
-      });
-  
-      logout.addEventListener('click', async () => {
-        await supabase.auth.signOut();
-        window.location.reload();
-      });
-  
-      // Hide on outside click
-      document.addEventListener('click', (e) => {
-        if (!loginContainer.contains(e.target)) {
-          menu.classList.remove('open');
-        }
-      });
-  
-    } else {
-      loginContainer.innerHTML = `
-        <span id="searchIcon" style="cursor:pointer;">🔍</span>
-        <a href="login.html" class="login-btn">Log in</a>
-      `;
+        `;
+      } else {
+        loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
+      }
     }
+  
+    loadUser();
+  
+    window.toggleDropdown = function () {
+      const menu = document.getElementById('userDropdown');
+      menu.classList.toggle('open');
+    };
+  
+    window.logout = async function () {
+      await supabase.auth.signOut();
+      window.location.reload();
+    };
+  
+    // Search toggle
+    const searchIcon = document.getElementById('searchIcon');
+    const searchInput = document.getElementById('searchInput');
+    searchIcon.addEventListener('click', () => {
+      searchInput.classList.toggle('active');
+      searchInput.focus();
+    });
   </script>
+  
   
   
 </body>
