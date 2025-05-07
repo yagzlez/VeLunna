@@ -432,10 +432,10 @@ html {
 
 
 #nav-login {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 }
 
 .welcome-container {
@@ -458,7 +458,10 @@ html {
 }
 
 .dropdown-menu {
-  display: none;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
   position: absolute;
   top: 100%;
   right: 0;
@@ -470,7 +473,11 @@ html {
   min-width: 120px;
 }
 
-.dropdown-menu a,
+.dropdown-menu.open {
+  max-height: 500px;
+  opacity: 1;
+}
+
 .dropdown-menu button {
   display: block;
   padding: 8px 12px;
@@ -483,8 +490,6 @@ html {
   font-size: 14px;
 }
 
-.dropdown-menu a:hover,
 .dropdown-menu button:hover {
   background: #f0f0f0;
 }
-
