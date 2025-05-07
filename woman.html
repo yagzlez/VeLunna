@@ -138,6 +138,34 @@
       });
     }
 
+    div.querySelector('img').addEventListener('click', () => {
+  document.getElementById('modalImg').src = product.image_url;
+  document.getElementById('modalTitle').textContent = product.title;
+  document.getElementById('modalDescription').textContent = product.description;
+  
+  // Fill size dropdown
+  const sizeSelect = document.getElementById('sizeSelect');
+  sizeSelect.innerHTML = '';
+  product.sizes.split(',').forEach(size => {
+    const option = document.createElement('option');
+    option.value = size.trim();
+    option.textContent = size.trim();
+    sizeSelect.appendChild(option);
+  });
+
+  // Show or hide Add to Basket
+  const basketBtn = document.querySelector('.basket-btn');
+  if (product.stock === 0) {
+    basketBtn.style.display = 'none';
+  } else {
+    basketBtn.style.display = 'block';
+  }
+
+  // Open modal
+  document.getElementById('productModal').style.display = 'block';
+});
+
+
     loadProducts();
 
   </script>
