@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -95,76 +95,121 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-  
-    const supabase = createClient(
-      'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
-    );
-  
-    const gallery = document.querySelector('.product-gallery');
-  
-    async function loadProducts() {
-      const { data: products, error } = await supabase
-        .from('Products')
-        .select('*')
-        .eq('is_available', true);
-  
-      if (error) {
-        console.error('Error fetching products:', error);
-        return;
-      }
-  
-      gallery.innerHTML = ''; // clear existing products
-  
-      products.forEach(product => {
-        const div = document.createElement('div');
-        div.className = 'product';
-  
-        const isSoldOut = product.stock === 0;
-  
-        div.innerHTML = `
-          <div class="product-img-wrapper ${isSoldOut ? 'sold-out' : ''}">
-            <img src="${product.image_url}" alt="${product.title}">
-            ${isSoldOut ? '<div class="sold-overlay">SOLD OUT</div>' : ''}
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const supabase = createClient(
+    'https://nhfuyokthqnzbmhbfdjd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
+  );
+
+  const loginContainer = document.getElementById('nav-login');
+  const gallery = document.querySelector('.product-gallery');
+
+  async function loadUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const name = user.user_metadata?.first_name || user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+
+      loginContainer.innerHTML = `
+        <div class="welcome-container">
+          <button class="welcome-toggle" onclick="toggleDropdown()">Welcome, ${name} <span>&#x25BE;</span></button>
+          <div class="dropdown-menu" id="userDropdown">
+            <button onclick="logout()">Logout</button>
           </div>
-          <p>${product.title}</p>
-        `;
-  
-        div.querySelector('img').addEventListener('click', () => {
-          document.getElementById('modalImg').src = product.image_url;
-          document.getElementById('modalTitle').textContent = product.title;
-          document.getElementById('modalDescription').textContent = product.description;
-  
-          // Fill sizes dropdown
-          const sizeSelect = document.getElementById('sizeSelect');
-          sizeSelect.innerHTML = '';
+        </div>
+      `;
+    } else {
+      loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
+    }
+  }
+
+  window.toggleDropdown = function () {
+    const menu = document.getElementById('userDropdown');
+    menu.classList.toggle('open');
+  };
+
+  window.logout = async function () {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
+  // Search toggle
+  const searchIcon = document.getElementById('searchIcon');
+  const searchInput = document.getElementById('searchInput');
+  searchIcon.addEventListener('click', () => {
+    searchInput.classList.toggle('active');
+    searchInput.focus();
+  });
+
+  // Load and display products
+  async function loadProducts() {
+    const { data: products, error } = await supabase
+      .from('Products')
+      .select('*')
+      .eq('is_available', true);
+
+    if (error) {
+      console.error('Error fetching products:', error);
+      return;
+    }
+
+    gallery.innerHTML = '';
+
+    products.forEach(product => {
+      const div = document.createElement('div');
+      div.className = 'product';
+
+      const isSoldOut = product.stock === 0;
+
+      div.innerHTML = `
+        <div class="product-img-wrapper ${isSoldOut ? 'sold-out' : ''}">
+          <img src="${product.image_url}" alt="${product.title}">
+          ${isSoldOut ? '<div class="sold-overlay">SOLD OUT</div>' : ''}
+        </div>
+        <p>${product.title}</p>
+      `;
+
+      // Modal logic
+      div.querySelector('img').addEventListener('click', () => {
+        document.getElementById('modalImg').src = product.image_url;
+        document.getElementById('modalTitle').textContent = product.title;
+        document.getElementById('modalDescription').textContent = product.description;
+
+        const sizeSelect = document.getElementById('sizeSelect');
+        sizeSelect.innerHTML = '';
+        if (product.sizes) {
           product.sizes.split(',').forEach(size => {
             const option = document.createElement('option');
             option.value = size.trim();
             option.textContent = size.trim();
             sizeSelect.appendChild(option);
           });
-  
-          // Show or hide Add to Basket
-          const basketBtn = document.querySelector('.basket-btn');
-          basketBtn.style.display = product.stock === 0 ? 'none' : 'block';
-  
-          // Show modal
-          document.getElementById('productModal').style.display = 'block';
-        });
-  
-        gallery.appendChild(div);
+        }
+
+        const basketBtn = document.querySelector('.basket-btn');
+        if (product.stock === 0) {
+          basketBtn.style.display = 'none';
+        } else {
+          basketBtn.style.display = 'block';
+        }
+
+        document.getElementById('productModal').style.display = 'block';
       });
-    }
-  
-    // Close modal when X is clicked
-    document.getElementById('modalClose').addEventListener('click', () => {
-      document.getElementById('productModal').style.display = 'none';
+
+      gallery.appendChild(div);
     });
-  
-    loadProducts();
-  </script>
+  }
+
+  loadUser();
+  loadProducts();
+
+  // Close modal on X
+  document.getElementById('modalClose').addEventListener('click', () => {
+    document.getElementById('productModal').style.display = 'none';
+  });
+</script>
+
   
 
 </body>
