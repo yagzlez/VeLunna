@@ -55,12 +55,11 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
     password,
     options: {
       data: {
-        first_name: firstName,
-        surname,
-        phone
+        name: `${firstName} ${surname}`
       }
     }
   });
+
 
   if (authError) {
     alert("Auth error: " + authError.message);
