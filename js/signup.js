@@ -49,35 +49,22 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
     return;
   }
 
-  // Sign up with Supabase Auth
+  // 🔑 Sign up user (trigger handles insert into `users`)
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
-        name: `${firstName} ${surname}`
+        first_name: firstName,
+        surname: surname,
+        phone: phone || null
       }
     }
   });
 
-
   if (authError) {
     alert("Auth error: " + authError.message);
-    return;
-  }
-
-  // Insert into `users` table
-  const { error: insertError } = await supabase.from('users').insert({
-    id: authData.user.id,
-    email,
-    first_name: firstName,
-    surname,
-    phone: phone || null // allow NULL
-  });
-
-  if (insertError) {
-    alert("Database error saving new user");
-    console.error(insertError);
+    console.error(authError);
     return;
   }
 
