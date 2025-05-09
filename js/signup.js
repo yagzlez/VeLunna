@@ -11,7 +11,6 @@ document.getElementById('toggleEye').addEventListener('click', () => {
   pwd.type = pwd.type === 'password' ? 'text' : 'password';
 });
 
-// Password strength validation
 function isPasswordStrong(password) {
   return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*.,?])[A-Za-z\d!@#\$%\^&\*.,?]{8,}$/.test(password);
 }
@@ -19,13 +18,12 @@ function isPasswordStrong(password) {
 document.getElementById('signupBtn').addEventListener('click', async () => {
   const firstName = document.getElementById('firstName').value.trim();
   const surname = document.getElementById('surname').value.trim();
-  const phone = document.getElementById('phone').value.trim();
+  const phone = document.getElementById('phone').value.trim(); // Optional
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
   const confirmPassword = document.getElementById('confirmPassword').value;
   const message = document.getElementById('passwordMessage');
 
-  // Password checks
   if (password !== confirmPassword) {
     message.textContent = "Passwords do not match.";
     message.style.display = "block";
@@ -40,23 +38,18 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
 
   message.style.display = "none";
 
-  // Only check phone if filled
-  let orQuery = `email.eq.${email}`;
-  if (phone !== "") {
-    orQuery += `,phone.eq.${phone}`;
-  }
-
+  // Check for existing email or phone
   const { data: existingUsers } = await supabase
     .from('users')
     .select('email, phone')
-    .or(orQuery);
+    .or(`email.eq.${email}${phone ? `,phone.eq.${phone}` : ''}`);
 
   if (existingUsers && existingUsers.length > 0) {
     alert("Email or phone number already in use.");
     return;
   }
 
-  // Create account
+  // Sign up with Supabase Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
@@ -64,13 +57,28 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
       data: {
         first_name: firstName,
         surname,
-        phone: phone || null // Optional field
+        phone
       }
     }
   });
 
   if (authError) {
-    alert(authError.message);
+    alert("Auth error: " + authError.message);
+    return;
+  }
+
+  // Insert into `users` table
+  const { error: insertError } = await supabase.from('users').insert({
+    id: authData.user.id,
+    email,
+    first_name: firstName,
+    surname,
+    phone: phone || null // allow NULL
+  });
+
+  if (insertError) {
+    alert("Database error saving new user");
+    console.error(insertError);
     return;
   }
 
