@@ -125,7 +125,7 @@
     return;
   }
 
-  const availableProducts = products.filter(p => p.is_available === true);
+  const availableProducts = products.filter(p => String(p.is_available).toLowerCase() === 'true');
   console.log("Filtered availableProducts:", availableProducts);
 
   if (!availableProducts.length) {
