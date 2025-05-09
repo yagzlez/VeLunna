@@ -25,7 +25,7 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
   const confirmPassword = document.getElementById('confirmPassword').value;
   const message = document.getElementById('passwordMessage');
 
-  // Password validations
+  // Password checks
   if (password !== confirmPassword) {
     message.textContent = "Passwords do not match.";
     message.style.display = "block";
@@ -40,26 +40,31 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
 
   message.style.display = "none";
 
-  // Check if email or phone already exists
+  // Only check phone if filled
+  let orQuery = `email.eq.${email}`;
+  if (phone !== "") {
+    orQuery += `,phone.eq.${phone}`;
+  }
+
   const { data: existingUsers } = await supabase
     .from('users')
     .select('email, phone')
-    .or(`email.eq.${email},phone.eq.${phone}`);
+    .or(orQuery);
 
   if (existingUsers && existingUsers.length > 0) {
     alert("Email or phone number already in use.");
     return;
   }
 
-  // Create the user
+  // Create account
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         first_name: firstName,
-        surname: surname,
-        phone
+        surname,
+        phone: phone || null // Optional field
       }
     }
   });
@@ -67,16 +72,6 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
   if (authError) {
     alert(authError.message);
     return;
-  }
-
-  if (authData.user) {
-    await supabase.from('users').insert({
-      id: authData.user.id,
-      email,
-      first_name: firstName,
-      surname,
-      phone
-    });
   }
 
   alert("✅ Account created! Please check your email to confirm.");
