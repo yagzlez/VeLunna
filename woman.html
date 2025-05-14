@@ -67,58 +67,83 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-  
-    const supabase = createClient(
-      'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
-    );
-  
-    const gallery = document.querySelector('.product-gallery');
-    const loginContainer = document.getElementById('nav-login');
-  
-    async function loadUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-  
-      if (user) {
-        const name = user.user_metadata?.first_name || user.user_metadata?.full_name || user.user_metadata?.name || 'User';
-  
-        loginContainer.innerHTML = `
-          <div class="welcome-container">
-            <button class="welcome-toggle" onclick="toggleDropdown()">Welcome, ${name} <span>&#x25BE;</span></button>
-            <div class="dropdown-menu" id="userDropdown">
-              <button onclick="logout()">Logout</button>
-            </div>
-          </div>
-        `;
-      } else {
-        loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
-      }
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const supabase = createClient(
+    'https://nhfuyokthqnzbmhbfdjd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
+  );
+
+  const gallery = document.querySelector('.product-gallery');
+  const loginContainer = document.getElementById('nav-login');
+
+  async function getCurrentUserId() {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user?.id || null;
+  }
+
+  async function handleWishlistClick() {
+    const productId = document.getElementById('productModal').getAttribute('data-product-id');
+    const userId = await getCurrentUserId();
+
+    if (!userId) {
+      alert("Please log in to use wishlist.");
+      return;
     }
-  
-    window.toggleDropdown = function () {
-      const menu = document.getElementById('userDropdown');
-      menu.classList.toggle('open');
-    };
-  
-    window.logout = async function () {
-      await supabase.auth.signOut();
-      window.location.reload();
-    };
-  
-    const searchIcon = document.getElementById('searchIcon');
-    const searchInput = document.getElementById('searchInput');
-    searchIcon.addEventListener('click', () => {
-      searchInput.classList.toggle('active');
-      searchInput.focus();
-    });
-  
-    async function loadProducts() {
+
+    const { error } = await supabase.from('Wishlist').insert([
+      {
+        user_id: userId,
+        "product id": productId
+      }
+    ]);
+
+    if (error) {
+      console.error("❌ Wishlist insert error:", error.message);
+      alert("Failed to add to wishlist.");
+    } else {
+      alert("✅ Added to wishlist!");
+    }
+  }
+
+  async function loadUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const name = user.user_metadata?.first_name || user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+
+      loginContainer.innerHTML = `
+        <div class="welcome-container">
+          <button class="welcome-toggle" onclick="toggleDropdown()">Welcome, ${name} <span>&#x25BE;</span></button>
+          <div class="dropdown-menu" id="userDropdown">
+            <button onclick="logout()">Logout</button>
+          </div>
+        </div>
+      `;
+    } else {
+      loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
+    }
+  }
+
+  window.toggleDropdown = function () {
+    document.getElementById('userDropdown').classList.toggle('open');
+  };
+
+  window.logout = async function () {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
+  const searchIcon = document.getElementById('searchIcon');
+  const searchInput = document.getElementById('searchInput');
+  searchIcon.addEventListener('click', () => {
+    searchInput.classList.toggle('active');
+    searchInput.focus();
+  });
+
+  async function loadProducts() {
     const { data: products, error } = await supabase
       .from('Products')
       .select('*');
-
-    console.log("Raw Supabase response:", products, error);
 
     if (error) {
       console.error('Error loading products:', error.message);
@@ -126,7 +151,6 @@
     }
 
     const availableProducts = products.filter(p => String(p.is_available).toLowerCase() === 'true');
-    console.log("Filtered availableProducts:", availableProducts);
 
     if (!availableProducts.length) {
       gallery.innerHTML = '<p>No products available in this category.</p>';
@@ -169,6 +193,9 @@
         const basketBtn = document.querySelector('.basket-btn');
         basketBtn.style.display = product.stock === 0 ? 'none' : 'block';
 
+        // ✅ Bind wishlist button each time modal opens
+        document.querySelector('.wishlist-btn').onclick = handleWishlistClick;
+
         document.getElementById('productModal').style.display = 'block';
       });
 
@@ -176,46 +203,14 @@
     });
   }
 
-    loadUser();
-    loadProducts();
-    document.querySelector('.wishlist-btn').addEventListener('click', handleWishlistClick);  
-    document.getElementById('modalClose').addEventListener('click', () => {
-      document.getElementById('productModal').style.display = 'none';
-    });
-  </script>
-  <script>
-    // Get current Supabase user
-async function getCurrentUserId() {
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.id || null;
-}
+  loadUser();
+  loadProducts();
 
-// Add to Wishlist logic
-async function handleWishlistClick() {
-  const productId = document.getElementById('productModal').getAttribute('data-product-id');
-  const userId = await getCurrentUserId();
+  document.getElementById('modalClose').addEventListener('click', () => {
+    document.getElementById('productModal').style.display = 'none';
+  });
+</script>
 
-  if (!userId) {
-    alert("Please log in to use wishlist.");
-    return;
-  }
-
-  const { error } = await supabase.from('Wishlist').insert([
-    {
-      user_id: userId,
-      "product id": productId
-    }
-  ]);
-
-  if (error) {
-    console.error("❌ Wishlist insert error:", error.message);
-    alert("Failed to add to wishlist.");
-  } else {
-    alert("✅ Added to wishlist!");
-  }
-}
-
-  </script>
 
 
   
