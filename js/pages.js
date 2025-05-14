@@ -48,6 +48,8 @@ async function loadUser() {
       </div>
     </div>
 
+    ;
+
   } else {
     loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
   }
