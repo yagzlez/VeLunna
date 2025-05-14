@@ -46,18 +46,15 @@ async function handleWishlistClick() {
       console.error('Error removing from wishlist:', deleteError.message);
       alert("Failed to remove from wishlist.");
     } else {
-      // 🔻 Decrease count by 1
-      await supabase.rpc('decrement_wishlist_count', { product_id_input: productId });
+      const { error: rpcError } = await supabase.rpc('decrement_wishlist_count', {
+        product_id_input: productId
+      });
+      if (rpcError) console.error('❌ decrement RPC error:', rpcError.message);
 
       wishlistBtn.textContent = "♡ Add to Wishlist";
       alert("❌ Removed from wishlist.");
-
-      const { data, error } = await supabase.rpc('decrement_wishlist_count', {
-      product_id_input: productId
-    });
-    if (error) console.error('❌ decrement RPC error:', error.message);
-
     }
+
   } else {
     const { error: insertError } = await supabase.from('Wishlist').insert([
       {
@@ -70,16 +67,13 @@ async function handleWishlistClick() {
       console.error("❌ Wishlist insert error:", insertError.message);
       alert("Failed to add to wishlist.");
     } else {
-      // 🔺 Increase count by 1
-      await supabase.rpc('increment_wishlist_count', { product_id_input: productId });
+      const { error: rpcError } = await supabase.rpc('increment_wishlist_count', {
+        product_id_input: productId
+      });
+      if (rpcError) console.error('❌ Increment RPC error:', rpcError.message);
 
       wishlistBtn.textContent = "♥ Remove from Wishlist";
       alert("✅ Added to wishlist!");
-      const { data, error } = await supabase.rpc('increment_wishlist_count', {
-      product_id_input: productId
-    });
-      if (error) console.error('❌ Increment RPC error:', error.message);
-
     }
   }
 }
