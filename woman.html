@@ -125,6 +125,12 @@ async function handleWishlistClick() {
 
       wishlistBtn.textContent = "♡ Add to Wishlist";
       alert("❌ Removed from wishlist.");
+
+      const { data, error } = await supabase.rpc('increment_wishlist_count', {
+      product_id_input: productId
+    });
+    if (error) console.error('❌ Increment RPC error:', error.message);
+
     }
   } else {
     const { error: insertError } = await supabase.from('Wishlist').insert([
@@ -143,6 +149,11 @@ async function handleWishlistClick() {
 
       wishlistBtn.textContent = "♥ Remove from Wishlist";
       alert("✅ Added to wishlist!");
+      const { data, error } = await supabase.rpc('increment_wishlist_count', {
+      product_id_input: productId
+    });
+      if (error) console.error('❌ Increment RPC error:', error.message);
+
     }
   }
 }
