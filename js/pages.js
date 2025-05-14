@@ -47,9 +47,7 @@ async function loadUser() {
         <button onclick="logout()" class="logout-button">Logout</button>
       </div>
     </div>
-`
 
-    `;
   } else {
     loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
   }
