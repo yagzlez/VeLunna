@@ -78,6 +78,55 @@ async function handleWishlistClick() {
   }
 }
 
+async function handleBasketClick() {
+  const userId = await getCurrentUserId();
+  if (!userId) {
+    alert("Please log in to add items to the basket.");
+    return;
+  }
+
+  const productId = document.getElementById('productModal').getAttribute('data-product-id');
+  const size = document.getElementById('sizeSelect').value;
+
+  const { data: existingItem, error: checkError } = await supabase
+    .from('Basket')
+    .select('id, quantity')
+    .eq('user_id', userId)
+    .eq('product_id', productId)
+    .eq('size', size)
+    .single();
+
+  if (checkError && checkError.code !== 'PGRST116') {
+    console.error("❌ Basket check error:", checkError.message);
+    alert("Failed to check basket.");
+    return;
+  }
+
+  if (existingItem) {
+    const { error: updateError } = await supabase
+      .from('Basket')
+      .update({ quantity: existingItem.quantity + 1 })
+      .eq('id', existingItem.id);
+
+    if (updateError) {
+      console.error("❌ Update quantity error:", updateError.message);
+      alert("Failed to update basket.");
+    } else {
+      alert("🔁 Quantity updated in basket.");
+    }
+  } else {
+    const { error: insertError } = await supabase
+      .from('Basket')
+      .insert([{ user_id: userId, product_id: productId, size, quantity: 1 }]);
+
+    if (insertError) {
+      console.error("❌ Basket insert error:", insertError.message);
+      alert("Failed to add to basket.");
+    } else {
+      alert("✅ Added to basket!");
+    }
+  }
+}
 
 async function loadUser() {
   const { data: { user } } = await supabase.auth.getUser()
@@ -150,6 +199,7 @@ async function loadProducts() {
 
       const basketBtn = document.querySelector('.basket-btn')
       basketBtn.style.display = isSoldOut ? 'none' : 'block'
+      basketBtn.onclick = handleBasketClick
 
       const wishlistBtn = document.querySelector('.wishlist-btn')
       const userId = await getCurrentUserId()
