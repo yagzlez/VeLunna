@@ -177,12 +177,44 @@
 
     loadUser();
     loadProducts();
-  
+    document.querySelector('.wishlist-btn').addEventListener('click', handleWishlistClick);  
     document.getElementById('modalClose').addEventListener('click', () => {
       document.getElementById('productModal').style.display = 'none';
     });
   </script>
+  <script>
+    // Get current Supabase user
+async function getCurrentUserId() {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id || null;
+}
 
+// Add to Wishlist logic
+async function handleWishlistClick() {
+  const productId = document.getElementById('productModal').getAttribute('data-product-id');
+  const userId = await getCurrentUserId();
+
+  if (!userId) {
+    alert("Please log in to use wishlist.");
+    return;
+  }
+
+  const { error } = await supabase.from('Wishlist').insert([
+    {
+      user_id: userId,
+      "product id": productId
+    }
+  ]);
+
+  if (error) {
+    console.error("❌ Wishlist insert error:", error.message);
+    alert("Failed to add to wishlist.");
+  } else {
+    alert("✅ Added to wishlist!");
+  }
+}
+
+  </script>
 
 
   
