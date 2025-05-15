@@ -36,6 +36,8 @@ const pageCategory = window.location.pathname.includes("man") ? "men" : "women";
 
 async function loadUser() {
   const { data: { user } } = await supabase.auth.getUser();
+  const loginContainer = document.getElementById('nav-login');
+
   if (user) {
     const name = user.user_metadata?.first_name || user.user_metadata?.name || 'User';
     loginContainer.innerHTML = `
