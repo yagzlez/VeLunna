@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wishlist - Velunna</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="static-logo">
+
+  <!-- Fixed Navbar with logo + search -->
+  <header class="navbar shrink" id="navbar">
+    <a href="index.html">
+      <img src="images/Velunna.png" alt="Velunna Logo" class="main-logo" id="mainLogo">
+    </a>
+  
+    <div class="nav-icons">
+      <span id="searchIcon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Search..." />
+  
+      <div id="nav-login"></div>
+    </div>
+  </header>
+
+  <!-- Product Grid -->
+  <main class="product-gallery"></main>
+
+  <script type="module" src="js/pages.js"></script>
+
+  <!-- Modal for Product Preview -->
+  <div id="productModal" class="modal">
+    <div class="modal-content-wrapper">
+      
+      <span class="modal-close" id="modalClose">&times;</span>
+      
+      <div class="modal-left">
+        <img class="modal-img" id="modalImg" src="" alt="Product" />
+      </div>
+  
+      <div class="modal-right">
+        <h2 id="modalTitle">Elegant Bag</h2>
+        <p id="modalDescription">
+          Elegant canvas bag made with 100% organic cotton.  
+        </p>
+    
+        <!-- 🏷️ Price Display -->
+        <p id="modalPrice" class="product-price" style="font-weight: bold; margin-top: 10px;">
+          £0.00
+        </p>
+    
+        <label for="sizeSelect">Choose Size:</label>
+        <select id="sizeSelect">
+          <option value="M">Medium</option>
+          <option value="L">Large</option>
+        </select>
+    
+        <div class="modal-buttons">
+          <button class="wishlist-btn">♡ Add to Wishlist</button>
+          <button class="basket-btn">🛒 Add to Basket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="js/wishlist_page.js"></script>
+
+</body>
+</html>
