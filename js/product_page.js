@@ -133,15 +133,12 @@ async function loadUser() {
   if (user) {
     const name = user.user_metadata?.first_name || user.user_metadata?.name || 'User'
     loginContainer.innerHTML = `
-    <div class="welcome-container">
-      <button class="welcome-toggle" onclick="toggleDropdown()">Welcome, ${name} <span>&#x25BE;</span></button>
-      <div class="dropdown-menu" id="userDropdown">
-        <a href="wishlist.html" class="dropdown-link">♡ View Wishlist</a>
-        <hr class="dropdown-separator">
-        <button onclick="logout()" class="logout-button">Logout</button>
+      <div class="welcome-container">
+        <button class="welcome-toggle" onclick="toggleDropdown()">Welcome, ${name} <span>&#x25BE;</span></button>
+        <div class="dropdown-menu" id="userDropdown">
+          <button onclick="logout()">Logout</button>
+        </div>
       </div>
-    </div>
-  `;
     `
   } else {
     loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`
