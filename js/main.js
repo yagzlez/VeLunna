@@ -13,6 +13,7 @@ setInterval(showNextSlide, 4000);
 
 // Shrink the navbar and logo on scroll
 window.addEventListener("scroll", () => {
+  const navbar = document.getElementById("navbar");
   if (!document.body.classList.contains("static-logo")) {
     if (window.scrollY > 50) {
       navbar.classList.add("shrink");
@@ -22,19 +23,22 @@ window.addEventListener("scroll", () => {
   }
 });
 
+
+
 const searchIcon = document.getElementById("searchIcon");
 const searchInput = document.getElementById("searchInput");
 
 searchIcon.addEventListener("click", (event) => {
-  event.stopPropagation();
+  event.stopPropagation(); // Stop click from reaching the body
   searchInput.classList.toggle("active");
   if (searchInput.classList.contains("active")) {
     searchInput.focus();
   }
 });
 
-// Modal Open/Close for carousel items
+// Close search input if clicking outside
 document.addEventListener("DOMContentLoaded", function () {
+  // Open modal
   document.querySelectorAll(".product img").forEach(img => {
     img.addEventListener("click", () => {
       const modal = document.getElementById("productModal");
@@ -49,49 +53,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Close modal
   const modalClose = document.getElementById("modalClose");
   modalClose.addEventListener("click", () => {
     document.getElementById("productModal").style.display = "none";
   });
 });
-
-// 🧠 Supabase Login + Wishlist Dropdown
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-const supabase = createClient(
-  'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
-
-);
-
-const loginContainer = document.getElementById('nav-login');
-
-window.toggleDropdown = function () {
-  document.getElementById('userDropdown')?.classList.toggle('open');
-};
-
-window.logout = async function () {
-  await supabase.auth.signOut();
-  window.location.reload();
-};
-
-async function loadUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    const name = user.user_metadata?.first_name || user.user_metadata?.name || 'User';
-    loginContainer.innerHTML = `
-      <div class="welcome-container">
-        <button class="welcome-toggle" onclick="toggleDropdown()">Welcome, ${name} <span>&#x25BE;</span></button>
-        <div class="dropdown-menu" id="userDropdown">
-          <a href="wishlist.html" class="dropdown-link">♡ View Wishlist</a>
-          <hr class="dropdown-separator">
-          <button onclick="logout()" class="logout-button">Logout</button>
-        </div>
-      </div>
-    `;
-  } else {
-    loginContainer.innerHTML = `<a href="login.html" class="login-btn">Log in</a>`;
-  }
-}
-
-loadUser();
