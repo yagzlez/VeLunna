@@ -10,8 +10,8 @@ const path = window.location.pathname.toLowerCase();
 
 let pageCategory = 'women'; // default
 
-if (path.includes('men.html')) pageCategory = 'men';
-else if (path.includes('woman.html')) pageCategory = 'women';
+if (path.includes('men.html')) pageCategory = 'y';
+else if (path.includes('woman.html')) pageCategory = 'x';
 
 const gallery = document.querySelector('.product-gallery');
 
