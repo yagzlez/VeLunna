@@ -79,14 +79,19 @@ async function loadProducts() {
     .from('Products')
     .select('*')
     .eq('is_available', true)
-    .eq('category', 'Y'); // ✅ Strictly load only men's products
+    .eq('category', 'Y'); // Strictly only load category 
 
   if (error) return console.error('Load error:', error.message);
 
-  const gallery = document.querySelector('.product-gallery');
-  gallery.innerHTML = products.length ? '' : '<p>No products available.</p>';
+  const filteredProducts = products.filter(
+    p => p.category === 'Y' && String(p.is_available).toLowerCase() === 'true'
+  );
 
-  products.forEach(product => {
+  gallery.innerHTML = filteredProducts.length
+    ? ''
+    : '<p>No products available.</p>';
+
+  filteredProducts.forEach(product => {
     const div = document.createElement('div');
     div.className = 'product';
     const isSoldOut = product.stock === 0;
@@ -138,6 +143,7 @@ async function loadProducts() {
     gallery.appendChild(div);
   });
 }
+
 
 document.getElementById('modalClose').addEventListener('click', () => {
   document.getElementById('productModal').style.display = 'none';
