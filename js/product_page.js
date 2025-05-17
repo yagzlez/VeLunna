@@ -6,9 +6,13 @@ const supabase = createClient(
 
 );
 
-const pageCategory = window.location.pathname.includes("men")
-  ? "men"
-  : "women";
+const path = window.location.pathname.toLowerCase();
+
+let pageCategory = 'women'; // default
+
+if (path.includes('men.html')) pageCategory = 'men';
+else if (path.includes('woman.html')) pageCategory = 'women';
+
 const gallery = document.querySelector('.product-gallery');
 
 async function getCurrentUserId() {
