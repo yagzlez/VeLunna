@@ -76,10 +76,9 @@ async function handleBasketClick() {
 
 async function loadProducts() {
   const { data: products, error } = await supabase
-    .from('Products')
+    .from('Products_Women')
     .select('*')
     .eq('is_available', true)
-    .eq('category', 'X'); // Strictly only load category X
 
   if (error) return console.error('Load error:', error.message);
 
