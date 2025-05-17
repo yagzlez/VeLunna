@@ -6,6 +6,9 @@ const supabase = createClient(
 
 );
 
+const pageCategory = window.location.pathname.includes("men")
+  ? "men"
+  : "women";
 const gallery = document.querySelector('.product-gallery');
 
 async function getCurrentUserId() {
@@ -22,10 +25,6 @@ async function handleWishlistClick() {
     alert("Please log in to use wishlist.");
     return;
   }
-
-const pageCategory = window.location.pathname.includes("men")
-  ? "men"
-  : "women";
   
   const { data: existing, error: checkError } = await supabase
     .from('Wishlist')
