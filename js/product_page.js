@@ -6,12 +6,7 @@ const supabase = createClient(
 
 );
 
-const path = window.location.pathname.toLowerCase();
-
-let pageCategory = 'x'; // default
-
-if (path.includes('men.html')) pageCategory = 'y';
-else if (path.includes('woman.html')) pageCategory = 'x';
+const pageCategory = document.body.dataset.category;
 
 const gallery = document.querySelector('.product-gallery');
 
