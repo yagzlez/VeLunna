@@ -2,7 +2,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(
   'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-  'your_anon_key_here'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
+
 );
 
 const gallery = document.querySelector('.product-gallery');
@@ -22,6 +23,10 @@ async function handleWishlistClick() {
     return;
   }
 
+const pageCategory = window.location.pathname.includes("men")
+  ? "men"
+  : "women";
+  
   const { data: existing, error: checkError } = await supabase
     .from('Wishlist')
     .select('id')
@@ -81,7 +86,11 @@ async function handleBasketClick() {
 }
 
 async function loadProducts() {
-  const { data: products, error } = await supabase.from('Products').select('*');
+  const { data: products, error } = await supabase
+  .from('Products')
+  .select('*')
+  .eq('is_available', true)
+  .eq('category', pageCategory);
   if (error) return console.error('Load error:', error.message);
 
   const availableProducts = products.filter(p => String(p.is_available).toLowerCase() === 'true');
