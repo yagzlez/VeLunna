@@ -3,10 +3,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const supabase = createClient(
   'https://nhfuyokthqnzbmhbfdjd.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
-
 );
-
-const pageCategory = document.body.dataset.category;
 
 const gallery = document.querySelector('.product-gallery');
 
@@ -24,19 +21,13 @@ async function handleWishlistClick() {
     alert("Please log in to use wishlist.");
     return;
   }
-  
-  const { data: existing, error: checkError } = await supabase
+
+  const { data: existing } = await supabase
     .from('Wishlist')
     .select('id')
     .eq('user_id', userId)
     .eq('product id', productId)
     .single();
-
-  if (checkError && checkError.code !== 'PGRST116') {
-    console.error('Error checking wishlist:', checkError.message);
-    alert("Error checking wishlist.");
-    return;
-  }
 
   if (existing) {
     await supabase.from('Wishlist').delete().eq('id', existing.id);
@@ -85,16 +76,17 @@ async function handleBasketClick() {
 
 async function loadProducts() {
   const { data: products, error } = await supabase
-  .from('Products')
-  .select('*')
-  .eq('is_available', true)
-  .eq('category', pageCategory);
+    .from('Products')
+    .select('*')
+    .eq('is_available', true)
+    .eq('category', 'X'); // ✅ Strict filter for women items only
+
   if (error) return console.error('Load error:', error.message);
 
-  const availableProducts = products.filter(p => String(p.is_available).toLowerCase() === 'true');
-  gallery.innerHTML = availableProducts.length ? '' : '<p>No products available.</p>';
+  const gallery = document.querySelector('.product-gallery');
+  gallery.innerHTML = products.length ? '' : '<p>No products available.</p>';
 
-  availableProducts.forEach(product => {
+  products.forEach(product => {
     const div = document.createElement('div');
     div.className = 'product';
     const isSoldOut = product.stock === 0;
