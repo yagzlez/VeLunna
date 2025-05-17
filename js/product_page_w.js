@@ -75,22 +75,26 @@ async function handleBasketClick() {
 }
 
 async function loadProducts() {
+  // Always start fresh
+  gallery.innerHTML = '';
+
   const { data: products, error } = await supabase
     .from('Products')
-    .select('*')
-    .eq('is_available', true)
-    .eq('category', 'X'); // Strictly only load category X
+    .select('*');
 
   if (error) return console.error('Load error:', error.message);
 
+  // ✅ Hard, double-layer filtering
   const filteredProducts = products.filter(
     p => p.category === 'X' && String(p.is_available).toLowerCase() === 'true'
   );
 
-  gallery.innerHTML = filteredProducts.length
-    ? ''
-    : '<p>No products available.</p>';
+  if (!filteredProducts.length) {
+    gallery.innerHTML = '<p>No products available.</p>';
+    return;
+  }
 
+  // ✅ Clean slate rendering
   filteredProducts.forEach(product => {
     const div = document.createElement('div');
     div.className = 'product';
