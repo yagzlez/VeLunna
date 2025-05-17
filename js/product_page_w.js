@@ -77,23 +77,20 @@ async function handleBasketClick() {
 async function loadProducts() {
   gallery.innerHTML = '';
 
-  const { data: filteredProducts, error } = await supabase
+  const { data: products, error } = await supabase
     .from('Products')
     .select('*')
     .eq('category', 'X')
-    .eq('is_available', true); // this way no need to filter later
+    .eq('is_available', true);
 
-  if (error) {
-    console.error('Load error:', error.message);
-    return;
-  }
+  if (error) return console.error('Load error:', error.message);
 
-  if (!filteredProducts.length) {
+  if (!products.length) {
     gallery.innerHTML = '<p>No products available.</p>';
     return;
   }
 
-  filteredProducts.forEach(product => {
+  products.forEach(product => {
     const div = document.createElement('div');
     div.className = 'product';
     const isSoldOut = product.stock === 0;
@@ -145,7 +142,6 @@ async function loadProducts() {
     gallery.appendChild(div);
   });
 }
-
 
 document.getElementById('modalClose').addEventListener('click', () => {
   document.getElementById('productModal').style.display = 'none';
