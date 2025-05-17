@@ -75,21 +75,23 @@ async function handleBasketClick() {
 }
 
 async function loadProducts() {
-  const { data: products, error } = await supabase
+  gallery.innerHTML = '';
+
+  const { data: filteredProducts, error } = await supabase
     .from('Products')
     .select('*')
-    .eq('is_available', true)
-    .eq('category', 'X'); // Strictly only load category X
+    .eq('category', 'X')
+    .eq('is_available', true); // this way no need to filter later
 
-  if (error) return console.error('Load error:', error.message);
+  if (error) {
+    console.error('Load error:', error.message);
+    return;
+  }
 
-  const filteredProducts = products.filter(
-    p => p.category === 'X' && String(p.is_available).toLowerCase() === 'true'
-  );
-
-  gallery.innerHTML = filteredProducts.length
-    ? ''
-    : '<p>No products available.</p>';
+  if (!filteredProducts.length) {
+    gallery.innerHTML = '<p>No products available.</p>';
+    return;
+  }
 
   filteredProducts.forEach(product => {
     const div = document.createElement('div');
