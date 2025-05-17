@@ -75,15 +75,18 @@ async function handleBasketClick() {
 }
 
 async function loadProducts() {
-  gallery.innerHTML = '';
+  gallery.innerHTML = ''; // Clear first
 
   const { data: products, error } = await supabase
     .from('Products')
     .select('*')
-    .eq('category', 'X')
-    .eq('is_available', true);
+    .eq('category', 'X') // Show only women items
+    .eq('is_available', true); // Must also be available
 
-  if (error) return console.error('Load error:', error.message);
+  if (error) {
+    console.error('Load error:', error.message);
+    return;
+  }
 
   if (!products.length) {
     gallery.innerHTML = '<p>No products available.</p>';
