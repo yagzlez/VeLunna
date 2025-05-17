@@ -75,22 +75,21 @@ async function handleBasketClick() {
 }
 
 async function loadProducts() {
+  gallery.innerHTML = '';
+
   const { data: products, error } = await supabase
     .from('Products_Women')
     .select('*')
-    .eq('is_available', true)
+    .eq('is_available', true);
 
-  if (error) return console.error('Load error:', error.message);
+  if (error) return console.error('❌ Load error:', error.message);
 
-  const filteredProducts = products.filter(
-    p => p.category === 'X' && String(p.is_available).toLowerCase() === 'true'
-  );
+  if (!products || products.length === 0) {
+    gallery.innerHTML = '<p>No products available.</p>';
+    return;
+  }
 
-  gallery.innerHTML = filteredProducts.length
-    ? ''
-    : '<p>No products available.</p>';
-
-  filteredProducts.forEach(product => {
+  products.forEach(product => {
     const div = document.createElement('div');
     div.className = 'product';
     const isSoldOut = product.stock === 0;
@@ -142,7 +141,6 @@ async function loadProducts() {
     gallery.appendChild(div);
   });
 }
-
 
 document.getElementById('modalClose').addEventListener('click', () => {
   document.getElementById('productModal').style.display = 'none';
