@@ -76,28 +76,22 @@ async function handleBasketClick() {
 
 async function loadProducts() {
   const { data: products, error } = await supabase
-  .from('Products')
-  .select('*')
-  .eq('is_available', true)
-  .eq('category', 'X');
+    .from('Products')
+    .select('*')
+    .eq('is_available', true)
+    .eq('category', 'X'); // Strictly only load category X
 
-if (error) return console.error('Load error:', error.message);
+  if (error) return console.error('Load error:', error.message);
 
-const filteredProducts = products.filter(
-  p => p.category === 'X' && String(p.is_available).toLowerCase() === 'true'
-);
+  const filteredProducts = products.filter(
+    p => p.category === 'X' && String(p.is_available).toLowerCase() === 'true'
+  );
 
-const gallery = document.querySelector('.product-gallery');
-gallery.innerHTML = filteredProducts.length
-  ? ''
-  : '<p>No products available.</p>';
+  gallery.innerHTML = filteredProducts.length
+    ? ''
+    : '<p>No products available.</p>';
 
-filteredProducts.forEach(product => {
-  const div = document.createElement('div');
-  // ... rest of your product display logic here
-});
-
-  products.forEach(product => {
+  filteredProducts.forEach(product => {
     const div = document.createElement('div');
     div.className = 'product';
     const isSoldOut = product.stock === 0;
@@ -149,6 +143,7 @@ filteredProducts.forEach(product => {
     gallery.appendChild(div);
   });
 }
+
 
 document.getElementById('modalClose').addEventListener('click', () => {
   document.getElementById('productModal').style.display = 'none';
