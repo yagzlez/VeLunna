@@ -13,7 +13,10 @@ async function getCurrentUserId() {
 }
 
 async function handleWishlistClick() {
-  const productId = document.getElementById('productModal').getAttribute('data-product-id');
+  const productId = document
+    .getElementById('productModal')
+    .getAttribute('data-product-id');
+
   const userId = await getCurrentUserId();
   const wishlistBtn = document.querySelector('.wishlist-btn');
 
@@ -26,21 +29,25 @@ async function handleWishlistClick() {
     .from('Wishlist')
     .select('id')
     .eq('user_id', userId)
-    .eq('product id', productId)
+    .eq('product_id', productId)
+    .eq('product_table', 'Products_Women')
     .single();
 
   if (existing) {
     await supabase.from('Wishlist').delete().eq('id', existing.id);
-    await supabase.rpc('decrement_wishlist_count', { product_id_input: productId });
     wishlistBtn.textContent = "♡ Add to Wishlist";
     alert("❌ Removed from wishlist.");
   } else {
-    await supabase.from('Wishlist').insert([{ user_id: userId, "product id": productId }]);
-    await supabase.rpc('increment_wishlist_count', { product_id_input: productId });
+    await supabase.from('Wishlist').insert([{
+      user_id: userId,
+      product_id: productId,
+      product_table: 'Products_Women'
+    }]);
     wishlistBtn.textContent = "♥ Remove from Wishlist";
     alert("✅ Added to wishlist!");
   }
 }
+
 
 async function handleBasketClick() {
   const userId = await getCurrentUserId();
