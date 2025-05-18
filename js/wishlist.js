@@ -41,7 +41,7 @@ window.logout = async function () {
   window.location.reload();
 };
 
-async function removeFromWishlist(productId) {
+async function removeFromWishlist(productId, productTable) {
   const userId = await getCurrentUserId();
   if (!userId) return;
 
@@ -49,7 +49,8 @@ async function removeFromWishlist(productId) {
     .from('Wishlist')
     .select('id')
     .eq('user_id', userId)
-    .eq('product id', productId)
+    .eq('product_id', productId)
+    .eq('product_table', productTable)
     .single();
 
   if (checkError) return console.error("Fetch error:", checkError.message);
@@ -60,10 +61,7 @@ async function removeFromWishlist(productId) {
     .eq('id', existing.id);
 
   if (!deleteError) {
-    await supabase.rpc('decrement_wishlist_count', {
-      product_id_input: productId
-    });
-    loadWishlistProducts(); // Refresh view
+    loadWishlistProducts();
   } else {
     console.error("Remove failed:", deleteError.message);
   }
@@ -75,7 +73,7 @@ async function loadWishlistProducts() {
 
   const { data: wishlistItems, error: wishlistError } = await supabase
     .from('Wishlist')
-    .select('product id')
+    .select('product_id, product_table')
     .eq('user_id', userId);
 
   if (wishlistError) {
@@ -83,28 +81,38 @@ async function loadWishlistProducts() {
     return;
   }
 
-  const productIds = wishlistItems.map(item => item["product id"]);
-
-  if (!productIds.length) {
+  if (!wishlistItems.length) {
     gallery.innerHTML = `<p>Your wishlist is empty.</p>`;
     return;
   }
 
-  const { data: products, error: productsError } = await supabase
-    .from('Products')
-    .select('*')
-    .in('id', productIds);
+  const womenIds = wishlistItems
+    .filter(item => item.product_table === 'Products_Women')
+    .map(item => item.product_id);
 
-  if (productsError) {
-    console.error("❌ Products load error:", productsError.message);
-    return;
-  }
+  const menIds = wishlistItems
+    .filter(item => item.product_table === 'Products_Men')
+    .map(item => item.product_id);
+
+  const womenProducts = await supabase
+    .from('Products_Women')
+    .select('*')
+    .in('id', womenIds);
+
+  const menProducts = await supabase
+    .from('Products_Men')
+    .select('*')
+    .in('id', menIds);
+
+  const allProducts = [
+    ...(womenProducts.data || []),
+    ...(menProducts.data || [])
+  ];
 
   gallery.innerHTML = '';
-  products.forEach(product => {
+  allProducts.forEach(product => {
     const div = document.createElement('div');
     div.className = 'product';
-
     const isSoldOut = product.stock === 0;
 
     div.innerHTML = `
@@ -136,7 +144,7 @@ async function loadWishlistProducts() {
 
       const wishlistBtn = document.querySelector('.wishlist-btn');
       wishlistBtn.textContent = "♥ Remove from Wishlist";
-      wishlistBtn.onclick = () => removeFromWishlist(product.id);
+      wishlistBtn.onclick = () => removeFromWishlist(product.id, product.product_table);
 
       document.getElementById('productModal').style.display = 'block';
     });
