@@ -14,37 +14,7 @@ async function getCurrentUserId() {
 
 async function handleWishlistClick() {
   const productId = document.getElementById('productModal').getAttribute('data-product-id');
-  const userId = await getCurrentUserId();
-  const wishlistBtn = document.querySelector('.wishlist-btn');
-
-  if (!userId) {
-    alert("Please log in to use wishlist.");
-    return;
-  }
-
-  const { data: existing } = await supabase
-    .from('Wishlist')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('product id', productId)
-    .single();
-
-  if (existing) {
-    await supabase.from('Wishlist').delete().eq('id', existing.id);
-    await supabase.rpc('decrement_wishlist_count', { product_id_input: productId });
-    wishlistBtn.textContent = "♡ Add to Wishlist";
-    alert("❌ Removed from wishlist.");
-  } else {
-    await supabase.from('Wishlist').insert([{ user_id: userId, "product id": productId }]);
-    await supabase.rpc('increment_wishlist_count', { product_id_input: productId });
-    wishlistBtn.textContent = "♥ Remove from Wishlist";
-    alert("✅ Added to wishlist!");
-  }
-}async function handleWishlistClick() {
-  const productId = document
-    .getElementById('productModal')
-    .getAttribute('data-product-id');
-
+  const productTable = document.getElementById('productModal').getAttribute('data-product-table');
   const userId = await getCurrentUserId();
   const wishlistBtn = document.querySelector('.wishlist-btn');
 
@@ -58,7 +28,7 @@ async function handleWishlistClick() {
     .select('id')
     .eq('user_id', userId)
     .eq('product_id', productId)
-    .eq('product_table', 'Products_Men')
+    .eq('product_table', productTable)
     .single();
 
   if (existing) {
@@ -69,13 +39,12 @@ async function handleWishlistClick() {
     await supabase.from('Wishlist').insert([{
       user_id: userId,
       product_id: productId,
-      product_table: 'Products_Men'
+      product_table: productTable
     }]);
     wishlistBtn.textContent = "♥ Remove from Wishlist";
     alert("✅ Added to wishlist!");
   }
 }
-
 
 async function handleBasketClick() {
   const userId = await getCurrentUserId();
@@ -139,6 +108,7 @@ async function loadProducts() {
 
     div.querySelector('img').addEventListener('click', async () => {
       document.getElementById('productModal').setAttribute('data-product-id', product.id);
+      document.getElementById('productModal').setAttribute('data-product-table', 'Products_Men');
       document.getElementById('modalImg').src = product.image_url;
       document.getElementById('modalTitle').textContent = product.title;
       document.getElementById('modalDescription').textContent = product.description;
@@ -164,7 +134,8 @@ async function loadProducts() {
           .from('Wishlist')
           .select('id')
           .eq('user_id', userId)
-          .eq('product id', product.id)
+          .eq('product_id', product.id)
+          .eq('product_table', 'Products_Men')
           .single();
         wishlistBtn.textContent = existing ? "♥ Remove from Wishlist" : "♡ Add to Wishlist";
       }
