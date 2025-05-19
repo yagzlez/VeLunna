@@ -46,7 +46,9 @@ async function handleWishlistClick() {
     wishlistBtn.textContent = "♥ Remove from Wishlist";
     alert("✅ Added to wishlist!");
   }
-}async function handleWishlistClick() {
+}
+
+async function handleWishlistClick() {
   const productId = document
     .getElementById("productModal")
     .getAttribute("data-product-id");
