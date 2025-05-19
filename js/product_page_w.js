@@ -13,50 +13,9 @@ async function getCurrentUserId() {
 }
 
 async function handleWishlistClick() {
-  const productId = document
-    .getElementById('productModal')
-    .getAttribute('data-product-id');
-
-  const userId = await getCurrentUserId();
-  const wishlistBtn = document.querySelector('.wishlist-btn');
-
-  if (!userId) {
-    alert("Please log in to use wishlist.");
-    return;
-  }
-
-  const { data: existing } = await supabase
-    .from('Wishlist')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('product_id', productId)
-    .eq('product_table', 'Products_Women')
-    .single();
-
-  if (existing) {
-    await supabase.from('Wishlist').delete().eq('id', existing.id);
-    wishlistBtn.textContent = "♡ Add to Wishlist";
-    alert("❌ Removed from wishlist.");
-  } else {
-    await supabase.from('Wishlist').insert([{
-      user_id: userId,
-      product_id: productId,
-      product_table: 'Products_Women'
-    }]);
-    wishlistBtn.textContent = "♥ Remove from Wishlist";
-    alert("✅ Added to wishlist!");
-  }
-}
-
-async function handleWishlistClick() {
-  const productId = document
-    .getElementById("productModal")
-    .getAttribute("data-product-id");
-
-  const productTable = document
-    .getElementById("productModal")
-    .getAttribute("data-product-table"); // 👈 store source table!
-
+  const modal = document.getElementById("productModal");
+  const productId = modal.getAttribute("data-product-id");
+  const productTable = modal.getAttribute("data-product-table");
   const userId = await getCurrentUserId();
   const wishlistBtn = document.querySelector(".wishlist-btn");
 
@@ -89,8 +48,6 @@ async function handleWishlistClick() {
     alert("✅ Added to wishlist!");
   }
 }
-
-
 
 async function handleBasketClick() {
   const userId = await getCurrentUserId();
@@ -153,7 +110,10 @@ async function loadProducts() {
     `;
 
     div.querySelector('img').addEventListener('click', async () => {
-      document.getElementById('productModal').setAttribute('data-product-id', product.id);
+      const modal = document.getElementById('productModal');
+      modal.setAttribute('data-product-id', product.id);
+      modal.setAttribute('data-product-table', 'Products_Women');
+
       document.getElementById('modalImg').src = product.image_url;
       document.getElementById('modalTitle').textContent = product.title;
       document.getElementById('modalDescription').textContent = product.description;
@@ -179,13 +139,14 @@ async function loadProducts() {
           .from('Wishlist')
           .select('id')
           .eq('user_id', userId)
-          .eq('product id', product.id)
+          .eq('product_id', product.id)
+          .eq('product_table', 'Products_Women')
           .single();
         wishlistBtn.textContent = existing ? "♥ Remove from Wishlist" : "♡ Add to Wishlist";
       }
 
       wishlistBtn.onclick = handleWishlistClick;
-      document.getElementById('productModal').style.display = 'block';
+      modal.style.display = 'block';
     });
 
     gallery.appendChild(div);
