@@ -46,7 +46,48 @@ async function handleWishlistClick() {
     wishlistBtn.textContent = "♥ Remove from Wishlist";
     alert("✅ Added to wishlist!");
   }
+}async function handleWishlistClick() {
+  const productId = document
+    .getElementById("productModal")
+    .getAttribute("data-product-id");
+
+  const productTable = document
+    .getElementById("productModal")
+    .getAttribute("data-product-table"); // 👈 store source table!
+
+  const userId = await getCurrentUserId();
+  const wishlistBtn = document.querySelector(".wishlist-btn");
+
+  if (!userId) {
+    alert("Please log in to use wishlist.");
+    return;
+  }
+
+  const { data: existing } = await supabase
+    .from("Wishlist")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("product_id", productId)
+    .eq("product_table", productTable)
+    .single();
+
+  if (existing) {
+    await supabase.from("Wishlist").delete().eq("id", existing.id);
+    wishlistBtn.textContent = "♡ Add to Wishlist";
+    alert("❌ Removed from wishlist.");
+  } else {
+    await supabase.from("Wishlist").insert([
+      {
+        user_id: userId,
+        product_id: productId,
+        product_table: productTable,
+      },
+    ]);
+    wishlistBtn.textContent = "♥ Remove from Wishlist";
+    alert("✅ Added to wishlist!");
+  }
 }
+
 
 
 async function handleBasketClick() {
