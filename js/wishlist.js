@@ -3,6 +3,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const supabase = createClient(
   'https://nhfuyokthqnzbmhbfdjd.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
+
 );
 
 const gallery = document.querySelector('.product-gallery');
@@ -45,71 +46,77 @@ async function removeFromWishlist(productId, productTable) {
   const userId = await getCurrentUserId();
   if (!userId) return;
 
-  const { data: existing } = await supabase
-    .from('Wishlist')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('product_id', productId)
-    .eq('product_table', productTable)
-    .single();
-
-  if (!existing) return;
-
   await supabase
     .from('Wishlist')
     .delete()
-    .eq('id', existing.id);
+    .eq('user_id', userId)
+    .eq('product_id', productId)
+    .eq('product_table', productTable);
 
-  loadWishlistProducts(); // Refresh
+  loadWishlistProducts(); // Refresh view
+}
+
+async function handleBasketClick(productId, size) {
+  const userId = await getCurrentUserId();
+  if (!userId) {
+    alert("Please log in to add to basket.");
+    return;
+  }
+
+  const { data: existingItem } = await supabase
+    .from('Basket')
+    .select('id, quantity')
+    .eq('user_id', userId)
+    .eq('product_id', productId)
+    .eq('size', size)
+    .single();
+
+  if (existingItem) {
+    await supabase
+      .from('Basket')
+      .update({ quantity: existingItem.quantity + 1 })
+      .eq('id', existingItem.id);
+  } else {
+    await supabase
+      .from('Basket')
+      .insert([{ user_id: userId, product_id: productId, size, quantity: 1 }]);
+  }
+
+  alert("Added to basket!");
 }
 
 async function loadWishlistProducts() {
   const userId = await getCurrentUserId();
   if (!userId) return;
 
-  const { data: wishlistItems, error } = await supabase
+  const { data: wishlistItems, error: wishlistError } = await supabase
     .from('Wishlist')
     .select('product_id, product_table')
     .eq('user_id', userId);
 
-  if (error) {
-    console.error("❌ Wishlist load error:", error.message);
-    return;
-  }
-
-  if (!wishlistItems.length) {
+  if (wishlistError || !wishlistItems.length) {
     gallery.innerHTML = `<p>Your wishlist is empty.</p>`;
     return;
   }
 
-  const grouped = wishlistItems.reduce((acc, item) => {
-    if (!acc[item.product_table]) acc[item.product_table] = [];
-    acc[item.product_table].push(item.product_id);
-    return acc;
-  }, {});
+  const womenIds = wishlistItems.filter(i => i.product_table === 'Products_Women').map(i => i.product_id);
+  const menIds = wishlistItems.filter(i => i.product_table === 'Products_Men').map(i => i.product_id);
 
-  let allProducts = [];
+  const [womenProducts, menProducts] = await Promise.all([
+    womenIds.length ? supabase.from('Products_Women').select('*').in('id', womenIds) : { data: [] },
+    menIds.length ? supabase.from('Products_Men').select('*').in('id', menIds) : { data: [] },
+  ]);
 
-  for (const table in grouped) {
-    const { data, error } = await supabase
-      .from(table)
-      .select('*')
-      .in('id', grouped[table]);
-
-    if (data) {
-      data.forEach(p => p.product_table = table);
-      allProducts.push(...data);
-    } else if (error) {
-      console.error(`❌ Error loading from ${table}:`, error.message);
-    }
-  }
+  const allProducts = [
+    ...(womenProducts.data || []).map(p => ({ ...p, table: 'Products_Women' })),
+    ...(menProducts.data || []).map(p => ({ ...p, table: 'Products_Men' }))
+  ];
 
   gallery.innerHTML = '';
-
   allProducts.forEach(product => {
+    const isSoldOut = product.stock === 0;
     const div = document.createElement('div');
     div.className = 'product';
-    const isSoldOut = product.stock === 0;
 
     div.innerHTML = `
       <div class="product-img-wrapper ${isSoldOut ? 'sold-out' : ''}">
@@ -121,7 +128,7 @@ async function loadWishlistProducts() {
 
     div.querySelector('img').addEventListener('click', () => {
       document.getElementById('productModal').setAttribute('data-product-id', product.id);
-      document.getElementById('productModal').setAttribute('data-product-table', product.product_table);
+      document.getElementById('productModal').setAttribute('data-product-table', product.table);
       document.getElementById('modalImg').src = product.image_url;
       document.getElementById('modalTitle').textContent = product.title;
       document.getElementById('modalDescription').textContent = product.description;
@@ -136,12 +143,12 @@ async function loadWishlistProducts() {
         sizeSelect.appendChild(option);
       });
 
-      const basketBtn = document.querySelector('.basket-btn');
-      basketBtn.style.display = isSoldOut ? 'none' : 'block';
+      document.querySelector('.basket-btn').onclick = () =>
+        handleBasketClick(product.id, document.getElementById('sizeSelect').value);
 
       const wishlistBtn = document.querySelector('.wishlist-btn');
       wishlistBtn.textContent = "♥ Remove from Wishlist";
-      wishlistBtn.onclick = () => removeFromWishlist(product.id, product.product_table);
+      wishlistBtn.onclick = () => removeFromWishlist(product.id, product.table);
 
       document.getElementById('productModal').style.display = 'block';
     });
