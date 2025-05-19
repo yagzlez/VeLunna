@@ -45,7 +45,7 @@ async function removeFromWishlist(productId, productTable) {
   const userId = await getCurrentUserId();
   if (!userId) return;
 
-  const { data: existing, error: checkError } = await supabase
+  const { data: existing } = await supabase
     .from('Wishlist')
     .select('id')
     .eq('user_id', userId)
@@ -53,31 +53,27 @@ async function removeFromWishlist(productId, productTable) {
     .eq('product_table', productTable)
     .single();
 
-  if (checkError) return console.error("Fetch error:", checkError.message);
+  if (!existing) return;
 
-  const { error: deleteError } = await supabase
+  await supabase
     .from('Wishlist')
     .delete()
     .eq('id', existing.id);
 
-  if (!deleteError) {
-    loadWishlistProducts();
-  } else {
-    console.error("Remove failed:", deleteError.message);
-  }
+  loadWishlistProducts(); // Refresh
 }
 
 async function loadWishlistProducts() {
   const userId = await getCurrentUserId();
   if (!userId) return;
 
-  const { data: wishlistItems, error: wishlistError } = await supabase
+  const { data: wishlistItems, error } = await supabase
     .from('Wishlist')
     .select('product_id, product_table')
     .eq('user_id', userId);
 
-  if (wishlistError) {
-    console.error("❌ Wishlist load error:", wishlistError.message);
+  if (error) {
+    console.error("❌ Wishlist load error:", error.message);
     return;
   }
 
@@ -86,30 +82,30 @@ async function loadWishlistProducts() {
     return;
   }
 
-  const womenIds = wishlistItems
-    .filter(item => item.product_table === 'Products_Women')
-    .map(item => item.product_id);
+  const grouped = wishlistItems.reduce((acc, item) => {
+    if (!acc[item.product_table]) acc[item.product_table] = [];
+    acc[item.product_table].push(item.product_id);
+    return acc;
+  }, {});
 
-  const menIds = wishlistItems
-    .filter(item => item.product_table === 'Products_Men')
-    .map(item => item.product_id);
+  let allProducts = [];
 
-  const womenProducts = await supabase
-    .from('Products_Women')
-    .select('*')
-    .in('id', womenIds);
+  for (const table in grouped) {
+    const { data, error } = await supabase
+      .from(table)
+      .select('*')
+      .in('id', grouped[table]);
 
-  const menProducts = await supabase
-    .from('Products_Men')
-    .select('*')
-    .in('id', menIds);
-
-  const allProducts = [
-    ...(womenProducts.data || []),
-    ...(menProducts.data || [])
-  ];
+    if (data) {
+      data.forEach(p => p.product_table = table);
+      allProducts.push(...data);
+    } else if (error) {
+      console.error(`❌ Error loading from ${table}:`, error.message);
+    }
+  }
 
   gallery.innerHTML = '';
+
   allProducts.forEach(product => {
     const div = document.createElement('div');
     div.className = 'product';
@@ -125,6 +121,7 @@ async function loadWishlistProducts() {
 
     div.querySelector('img').addEventListener('click', () => {
       document.getElementById('productModal').setAttribute('data-product-id', product.id);
+      document.getElementById('productModal').setAttribute('data-product-table', product.product_table);
       document.getElementById('modalImg').src = product.image_url;
       document.getElementById('modalTitle').textContent = product.title;
       document.getElementById('modalDescription').textContent = product.description;
