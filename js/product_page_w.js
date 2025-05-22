@@ -2,7 +2,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(
   'https://nhfuyokthqnzbmhbfdjd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
+  'your-anon-key'
 );
 
 const gallery = document.querySelector('.product-gallery');
@@ -81,6 +81,40 @@ async function handleBasketClick() {
   }
 }
 
+function setupCarousel(images) {
+  const carouselImages = document.getElementById('carouselImages');
+  carouselImages.innerHTML = '';
+  images.forEach((imgUrl, index) => {
+    const img = document.createElement('img');
+    img.src = imgUrl;
+    img.classList.add('carousel-image');
+    if (index === 0) img.classList.add('active');
+    carouselImages.appendChild(img);
+  });
+
+  let currentIndex = 0;
+  const totalImages = images.length;
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function showImage(index) {
+    const imgs = document.querySelectorAll('.carousel-image');
+    imgs.forEach((img, i) => {
+      img.classList.toggle('active', i === index);
+    });
+  }
+
+  prevBtn.onclick = () => {
+    currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+    showImage(currentIndex);
+  };
+
+  nextBtn.onclick = () => {
+    currentIndex = (currentIndex + 1) % totalImages;
+    showImage(currentIndex);
+  };
+}
+
 async function loadProducts() {
   gallery.innerHTML = '';
 
@@ -114,7 +148,6 @@ async function loadProducts() {
       modal.setAttribute('data-product-id', product.id);
       modal.setAttribute('data-product-table', 'Products_Women');
 
-      document.getElementById('modalImg').src = product.image_url;
       document.getElementById('modalTitle').textContent = product.title;
       document.getElementById('modalDescription').textContent = product.description;
       document.getElementById('modalPrice').textContent = `£${product.price.toFixed(2)}`;
@@ -146,6 +179,10 @@ async function loadProducts() {
       }
 
       wishlistBtn.onclick = handleWishlistClick;
+
+      const images = product.images || [product.image_url];
+      setupCarousel(images);
+
       modal.style.display = 'block';
     });
 
