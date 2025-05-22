@@ -3,96 +3,81 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const supabase = createClient(
   'https://nhfuyokthqnzbmhbfdjd.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZnV5b2t0aHFuemJtaGJmZGpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5MTMsImV4cCI6MjA2MTk1NzkxM30.egjmV7jARfDpYns93oPpYeciqdkP7SmIBeBsViLz6cQ'
- 
 );
 
 const gallery = document.querySelector('.product-gallery');
-const modal = document.getElementById('productModal');
-const modalImg = document.getElementById('modalImg');
-const modalTitle = document.getElementById('modalTitle');
-const modalDescription = document.getElementById('modalDescription');
-const modalPrice = document.getElementById('modalPrice');
-const sizeSelect = document.getElementById('sizeSelect');
-const wishlistBtn = document.querySelector('.wishlist-btn');
-const basketBtn = document.querySelector('.basket-btn');
-const modelButtons = document.getElementById('modelButtons');
-const carouselDots = document.getElementById('carouselDots');
-
-let imageList = [];
-let currentImageIndex = 0;
 
 async function getCurrentUserId() {
   const { data: { user } } = await supabase.auth.getUser();
   return user?.id || null;
 }
 
-function updateCarousel() {
-  modalImg.src = imageList[currentImageIndex] || '';
-  carouselDots.innerHTML = imageList.map((_, i) =>
-    `<span class="dot ${i === currentImageIndex ? 'active' : ''}" data-index="${i}"></span>`
-  ).join('');
-
-  document.querySelectorAll('.dot').forEach(dot => {
-    dot.onclick = () => {
-      currentImageIndex = parseInt(dot.dataset.index);
-      updateCarousel();
-    };
-  });
-}
-
-document.getElementById('prevImage').onclick = () => {
-  currentImageIndex = (currentImageIndex - 1 + imageList.length) % imageList.length;
-  updateCarousel();
-};
-
-document.getElementById('nextImage').onclick = () => {
-  currentImageIndex = (currentImageIndex + 1) % imageList.length;
-  updateCarousel();
-};
-
 async function handleWishlistClick() {
+  const modal = document.getElementById("productModal");
   const productId = modal.getAttribute("data-product-id");
+  const productTable = modal.getAttribute("data-product-table");
   const userId = await getCurrentUserId();
-  if (!userId) return alert("Please log in.");
+  const wishlistBtn = document.querySelector(".wishlist-btn");
+
+  if (!userId) {
+    alert("Please log in to use wishlist.");
+    return;
+  }
 
   const { data: existing } = await supabase
     .from("Wishlist")
     .select("id")
     .eq("user_id", userId)
     .eq("product_id", productId)
-    .eq("product_table", "Products_Women")
+    .eq("product_table", productTable)
     .single();
 
   if (existing) {
     await supabase.from("Wishlist").delete().eq("id", existing.id);
     wishlistBtn.textContent = "♡ Add to Wishlist";
+    alert("❌ Removed from wishlist.");
   } else {
-    await supabase.from("Wishlist").insert([{ user_id: userId, product_id: productId, product_table: "Products_Women" }]);
+    await supabase.from("Wishlist").insert([
+      {
+        user_id: userId,
+        product_id: productId,
+        product_table: productTable,
+      },
+    ]);
     wishlistBtn.textContent = "♥ Remove from Wishlist";
+    alert("✅ Added to wishlist!");
   }
 }
 
 async function handleBasketClick() {
   const userId = await getCurrentUserId();
-  if (!userId) return alert("Please log in.");
-  const productId = modal.getAttribute("data-product-id");
-  const size = sizeSelect.value;
+  if (!userId) {
+    alert("Please log in to add items to the basket.");
+    return;
+  }
+
+  const productId = document.getElementById('productModal').getAttribute('data-product-id');
+  const size = document.getElementById('sizeSelect').value;
 
   const { data: existingItem } = await supabase
-    .from("Basket")
-    .select("id, quantity")
-    .eq("user_id", userId)
-    .eq("product_id", productId)
-    .eq("size", size)
+    .from('Basket')
+    .select('id, quantity')
+    .eq('user_id', userId)
+    .eq('product_id', productId)
+    .eq('size', size)
     .single();
 
   if (existingItem) {
-    await supabase.from("Basket")
+    await supabase
+      .from('Basket')
       .update({ quantity: existingItem.quantity + 1 })
-      .eq("id", existingItem.id);
+      .eq('id', existingItem.id);
+    alert("🔁 Quantity updated in basket.");
   } else {
-    await supabase.from("Basket")
+    await supabase
+      .from('Basket')
       .insert([{ user_id: userId, product_id: productId, size, quantity: 1 }]);
+    alert("✅ Added to basket!");
   }
 }
 
@@ -104,8 +89,12 @@ async function loadProducts() {
     .select('*')
     .eq('is_available', true);
 
-  if (error) return console.error('Load error:', error.message);
-  if (!products?.length) return gallery.innerHTML = '<p>No products available.</p>';
+  if (error) return console.error('❌ Load error:', error.message);
+
+  if (!products || products.length === 0) {
+    gallery.innerHTML = '<p>No products available.</p>';
+    return;
+  }
 
   products.forEach(product => {
     const div = document.createElement('div');
@@ -120,80 +109,52 @@ async function loadProducts() {
       <p>${product.title}</p>
     `;
 
-    div.querySelector('img').onclick = () => openModal(product);
+    div.querySelector('img').addEventListener('click', async () => {
+      const modal = document.getElementById('productModal');
+      modal.setAttribute('data-product-id', product.id);
+      modal.setAttribute('data-product-table', 'Products_Women');
+
+      document.getElementById('modalImg').src = product.image_url;
+      document.getElementById('modalTitle').textContent = product.title;
+      document.getElementById('modalDescription').textContent = product.description;
+      document.getElementById('modalPrice').textContent = `£${product.price.toFixed(2)}`;
+
+      const sizeSelect = document.getElementById('sizeSelect');
+      sizeSelect.innerHTML = '';
+      product.sizes?.split(',').forEach(size => {
+        const option = document.createElement('option');
+        option.value = size.trim();
+        option.textContent = size.trim();
+        sizeSelect.appendChild(option);
+      });
+
+      const basketBtn = document.querySelector('.basket-btn');
+      basketBtn.style.display = isSoldOut ? 'none' : 'block';
+      basketBtn.onclick = handleBasketClick;
+
+      const wishlistBtn = document.querySelector('.wishlist-btn');
+      const userId = await getCurrentUserId();
+      if (userId) {
+        const { data: existing } = await supabase
+          .from('Wishlist')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('product_id', product.id)
+          .eq('product_table', 'Products_Women')
+          .single();
+        wishlistBtn.textContent = existing ? "♥ Remove from Wishlist" : "♡ Add to Wishlist";
+      }
+
+      wishlistBtn.onclick = handleWishlistClick;
+      modal.style.display = 'block';
+    });
+
     gallery.appendChild(div);
   });
 }
 
-async function openModal(product) {
-  modal.setAttribute('data-product-id', product.id);
-  modal.setAttribute('data-product-table', 'Products_Women');
-
-  modalTitle.textContent = product.title;
-  modalDescription.textContent = product.description;
-  modalPrice.textContent = `£${product.price.toFixed(2)}`;
-
-  imageList = [product.image_url, ...(product.images?.split(',') || []).map(s => s.trim())];
-  currentImageIndex = 0;
-  updateCarousel();
-
-  sizeSelect.innerHTML = '';
-  product.sizes?.split(',').forEach(size => {
-    const option = document.createElement('option');
-    option.value = size.trim();
-    option.textContent = size.trim();
-    sizeSelect.appendChild(option);
-  });
-
-  const isSoldOut = product.stock === 0;
-  basketBtn.style.display = isSoldOut ? 'none' : 'block';
-  basketBtn.onclick = handleBasketClick;
-
-  const userId = await getCurrentUserId();
-  if (userId) {
-    const { data: existing } = await supabase
-      .from("Wishlist")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("product_id", product.id)
-      .eq("product_table", "Products_Women")
-      .single();
-    wishlistBtn.textContent = existing ? "♥ Remove from Wishlist" : "♡ Add to Wishlist";
-  }
-
-  wishlistBtn.onclick = handleWishlistClick;
-  await loadModels(product.group_id, product.id);
-  modal.style.display = 'block';
-}
-
-async function loadModels(group_id, selectedId) {
-  const { data: variants } = await supabase
-    .from("Products_Women")
-    .select("*")
-    .eq("group_id", group_id);
-
-  if (!variants?.length) return modelButtons.innerHTML = '';
-
-  modelButtons.innerHTML = variants.map(variant => `
-    <img src="${variant.image_url}"
-         class="model-btn ${variant.id === selectedId ? 'active' : ''}"
-         data-id="${variant.id}" />
-  `).join('');
-
-  modelButtons.querySelectorAll('.model-btn').forEach(btn => {
-    btn.onclick = async () => {
-      const id = btn.dataset.id;
-      const { data: [selected] } = await supabase
-        .from("Products_Women")
-        .select("*")
-        .eq("id", id);
-      if (selected) openModal(selected);
-    };
-  });
-}
-
-document.getElementById("modalClose").onclick = () => {
-  modal.style.display = 'none';
-};
+document.getElementById('modalClose').addEventListener('click', () => {
+  document.getElementById('productModal').style.display = 'none';
+});
 
 loadProducts();
