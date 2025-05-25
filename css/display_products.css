@@ -127,6 +127,21 @@
   right: 10px;
 }
 
+/* Image zoom */
+.modal-img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 8px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  cursor: zoom-in;
+}
+
+.modal-img:hover {
+  transform: scale(1.4);
+  cursor: zoom-out;
+}
+
 
 
 /* Keep modal content responsive */
