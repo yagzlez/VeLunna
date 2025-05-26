@@ -551,3 +551,26 @@ html {
   border-radius: 4px;
   z-index: 10;
 }
+
+
+.zoom-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.zoom-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 10;
+}
+
+.zoom-btn img {
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+}
