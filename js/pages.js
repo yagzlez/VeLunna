@@ -162,7 +162,7 @@ async function loadProducts() {
 
   if (!isShopPage) return; // ⛔ Skip if not on product gallery page
 
-  const tableName = location.pathname.includes('man.html') ? 'Products_Men' : 'Products_Women';
+  const tableName = location.pathname.includes('woman.html') ? 'Products_Men' : 'Products_Women';
   const {data: products, error} = await supabase.from(tableName).select('*');
   if (error) return console.error('Load error:', error.message);
 
