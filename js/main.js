@@ -23,39 +23,42 @@ window.addEventListener("scroll", () => {
   }
 });
 
-
-
 const searchIcon = document.getElementById("searchIcon");
 const searchInput = document.getElementById("searchInput");
 
-searchIcon.addEventListener("click", (event) => {
-  event.stopPropagation(); // Stop click from reaching the body
-  searchInput.classList.toggle("active");
-  if (searchInput.classList.contains("active")) {
-    searchInput.focus();
-  }
-});
+if (searchIcon && searchInput) {
+  searchIcon.addEventListener("click", (event) => {
+    event.stopPropagation();
+    searchInput.classList.toggle("active");
+    if (searchInput.classList.contains("active")) {
+      searchInput.focus();
+    }
+  });
+}
 
-// Close search input if clicking outside
 document.addEventListener("DOMContentLoaded", function () {
-  // Open modal
-  document.querySelectorAll(".product img").forEach(img => {
-    img.addEventListener("click", () => {
-      const modal = document.getElementById("productModal");
-      const modalImg = document.getElementById("modalImg");
-      const modalTitle = document.getElementById("modalTitle");
-      const caption = document.getElementById("modalDescription");
-
-      modal.style.display = "block";
-      modalImg.src = img.src;
-      modalTitle.innerText = img.alt;
-      caption.innerText = `Detailed description of ${img.alt}. Sizes: S, M, L. Materials: 100% Organic Cotton.`;
-    });
-  });
-
-  // Close modal
+  const modal = document.getElementById("productModal");
+  const modalImg = document.getElementById("modalImg");
+  const modalTitle = document.getElementById("modalTitle");
+  const caption = document.getElementById("modalDescription");
   const modalClose = document.getElementById("modalClose");
-  modalClose.addEventListener("click", () => {
-    document.getElementById("productModal").style.display = "none";
-  });
+
+  const productImages = document.querySelectorAll(".product img");
+
+  if (modal && modalImg && modalTitle && caption && productImages.length > 0) {
+    productImages.forEach(img => {
+      img.addEventListener("click", () => {
+        modal.style.display = "block";
+        modalImg.src = img.src;
+        modalTitle.innerText = img.alt;
+        caption.innerText = `Detailed description of ${img.alt}. Sizes: S, M, L. Materials: 100% Organic Cotton.`;
+      });
+    });
+  }
+
+  if (modalClose && modal) {
+    modalClose.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+  }
 });
