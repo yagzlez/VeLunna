@@ -24,10 +24,13 @@ function renderCarousel(images) {
 
   const prevBtn = document.getElementById("prevImgBtn");
   const nextBtn = document.getElementById("nextImgBtn");
-
+  
+  if (prevBtn && nextBtn) {
   const showArrows = imageList.length > 1;
   prevBtn.style.display = showArrows ? 'flex' : 'none';
   nextBtn.style.display = showArrows ? 'flex' : 'none';
+}
+
 
   updateCarousel();
 }
