@@ -143,7 +143,7 @@ async function loadVariant(productId) {
   renderCarousel(images);
 
   document.getElementById('modalTitle').textContent = product.title;
-  document.getElementById('modalDescription').textContent = product.description;
+  document.getElementById('modalDescription').innerHTML = product.description;
   document.getElementById('modalPrice').textContent = `£${product.price.toFixed(2)}`;
 
   populateSizes(product);
