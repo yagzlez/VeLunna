@@ -246,5 +246,34 @@ zoomBtn.onclick = () => {
   zoomIcon.alt = isZoomed ? 'Zoom Out' : 'Zoom In';
 };
 
+const modalImgEl = document.getElementById('modalImg');
+const zoomPanel = document.getElementById('zoomPanel');
+const zoomToggle = document.getElementById('zoomToggle');
+let zoomEnabled = false;
+
+zoomToggle.onclick = () => {
+  zoomEnabled = !zoomEnabled;
+  if (!zoomEnabled) zoomPanel.style.display = 'none';
+};
+
+modalImgEl.addEventListener('mousemove', e => {
+  if (!zoomEnabled) return;
+
+  const rect = modalImgEl.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+  zoomPanel.style.display = 'block';
+  zoomPanel.style.left = `${e.pageX + 20}px`;
+  zoomPanel.style.top = `${e.pageY - 100}px`;
+  zoomPanel.style.backgroundImage = `url('${modalImgEl.src}')`;
+  zoomPanel.style.backgroundPosition = `${x}% ${y}%`;
+});
+
+modalImgEl.addEventListener('mouseleave', () => {
+  if (zoomEnabled) zoomPanel.style.display = 'none';
+});
+
+
 
 loadProducts();
