@@ -1,169 +1,553 @@
-/* --- MODAL --- */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: 'Helvetica Neue', sans-serif;
+}
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s ease;
+  z-index: 999;
+}
+
+.main-logo {
+  max-width: 70%;
+  height: auto;
+  position: absolute;
+  transition: all 0.5s ease;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+
+.navbar.shrink {
+  height: 70px;
+  background: #fff;
+  justify-content: flex-start;
+  padding-left: 30px;
+}
+
+.navbar.shrink .main-logo {
+  max-width: 120px;
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+}
+
+#searchInput {
+  position: absolute;
+  top: 15px;
+  right: 60px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+  width: 0px;
+  opacity: 0;
+  pointer-events: none;
+  transition: width 0.4s ease, opacity 0.4s ease;
+}
+
+#searchInput.active {
+  width: 150px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+
+/* Hero */
+.hero {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+.carousel {
+  width: 100%;
+  height: 100vh; /* full viewport height */
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden; /* prevent overflow */
+  display: flex;
+}
+
+/* Carousel Images */
+.carousel-img {
+  width: 100%;
+  height: auto;
+  max-height: 100vh;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+.carousel-img.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.scroll-buffer {
+  height: 50px; /* Change from 100vh to something small */
+}
+
+/* Category section centered */
+.category-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.category-section {
+  width: 90%;
+  max-width: 900px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 50px 20px;
+  box-sizing: border-box;
+}
+
+.category {
+  flex: 1;
+  min-width: 140px;
+  max-width: 400px;
+  position: relative;
+  height: 70vh;
+  overflow: hidden;
+}
+
+.category-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.5s ease;
+}
+
+.category:hover .category-image {
+  transform: scale(1.05);
+}
+
+.category-text {
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+/* Newsletter full width */
+.newsletter {
+  width: 100vw;
+  padding: 80px 20px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.newsletter h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.newsletter p {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+}
+
+.subscribe-btn {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.subscribe-btn:hover {
+  background-color: #ddd;
+}
+
+/* Footer full width */
+.footer {
+  width: 100vw;
+  padding: 10px 20px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .category-section {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .category {
+    flex: 1 1 45%;
+    height: 50vh;
+  }
+
+  .category-text {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-img {
+    height: 100vh;
+    object-fit: cover;
+  }
+}
+
+/*woman page
+/* Product Gallery for Women Page */
+/* Product Gallery Styles */
+.product-gallery {
+  padding: 100px 40px 60px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 40px 30px;
+  justify-items: center;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.product {
+  text-align: center;
+}
+
+.product img {
+  width: 100%;
+  max-width: 240px;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.product img:hover {
+  transform: scale(1.05);
+}
+
+.product p {
+  margin-top: 10px;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+
+/* Modal styles */
+/* Fullscreen modal */
 .modal {
   display: none;
   position: fixed;
   z-index: 9999;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0,0,0,0.85);
   padding: 40px;
-  overflow-y: auto;
   box-sizing: border-box;
 }
 
 .modal-content-wrapper {
   display: flex;
-  flex-direction: column;
   background: #fff;
   border-radius: 10px;
+  overflow: hidden;
   max-width: 1000px;
   margin: auto;
   position: relative;
-  overflow: hidden;
 }
 
-@media (min-width: 768px) {
-  .modal-content-wrapper {
-    flex-direction: row;
-  }
-}
-
-.modal-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 24px;
-  color: #000;
-  cursor: pointer;
-  z-index: 20;
-}
-
-/* --- IMAGE AREA --- */
-
+/* Left side with image */
 .modal-left {
-  position: relative;
+  flex: 1;
+  background: #f5f5f5;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1;
   padding: 20px;
-}
-
-.image-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
 }
 
 .modal-img {
   max-width: 100%;
   max-height: 80vh;
   border-radius: 8px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
 }
 
-.modal-img.zoomed {
-  transform: scale(1.4);
-  cursor: zoom-out;
-}
-
-.modal-img:not(.zoomed) {
-  cursor: zoom-in;
-}
-
-/* --- ARROWS --- */
-
-.modal-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 24px;
-  font-weight: bold;
-  color: black;
-  background-color: white;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  z-index: 10;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  opacity: 0.8;
-  transition: opacity 0.3s;
-}
-
-.modal-arrow:hover {
-  opacity: 1;
-}
-
-#prevImgBtn {
-  left: 10px;
-}
-
-#nextImgBtn {
-  right: 10px;
-}
-
-/* --- DOTS --- */
-
-.carousel-dots {
+/* Right side with text + options */
+.modal-right {
+  flex: 1;
+  padding: 30px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  gap: 20px;
+}
+
+.modal-right h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.modal-right p {
+  font-size: 1rem;
+  color: #444;
+}
+
+.modal-right label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.modal-right select {
+  padding: 8px;
+  margin-top: 5px;
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.modal-buttons {
+  display: flex;
   gap: 10px;
-  margin-top: 15px;
-  position: relative;
-  z-index: 1;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #bbb;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.dot.active {
-  background: #000;
-}
-
-/* --- VARIANTS --- */
-
-#variantSection {
   margin-top: 20px;
 }
 
-#variantSection label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 10px;
-}
-
-#variantButtons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.variant-thumb {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border: 2px solid transparent;
-  border-radius: 6px;
+.wishlist-btn, .basket-btn {
+  flex: 1;
+  padding: 10px 20px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.2s ease, border 0.2s ease;
+  border-radius: 5px;
+  border: none;
+  transition: 0.3s ease;
 }
 
-.variant-thumb:hover {
-  transform: scale(1.05);
-  border: 2px solid #000;
+.wishlist-btn {
+  background: #fff;
+  border: 1px solid #000;
+}
+
+.wishlist-btn:hover {
+  background: #f0f0f0;
+}
+
+.basket-btn {
+  background: #000;
+  color: #fff;
+}
+
+.basket-btn:hover {
+  background: #222;
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 2rem;
+  color: #000;
+  cursor: pointer;
+}
+
+/*login button*/
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+.login-btn {
+  background-color: black;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-family: 'Didot', serif;
+  text-decoration: none;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #333;
+}
+
+.welcome-text {
+  font-size: 18px;
+  color: #111;
+  margin-left: 10px;
+  font-family: inherit;
+}
+
+
+
+#nav-login {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.welcome-container {
+  position: relative;
+  display: inline-block;
+}
+
+.welcome-toggle {
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  border-radius: 6px;
+  padding: 10px;
+  z-index: 1;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dropdown-menu.open {
+  display: flex;
+}
+
+.dropdown-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.dropdown-link:hover {
+  background-color: #f0f0f0;
+}
+
+.logout-button {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: #e04040;
+}
+
+.dropdown-separator {
+  margin: 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+
+
+
+
+.nav-left {
+  left: 30px;
+  right: auto;
+  justify-content: flex-start;
+}
+
+.nav-right {
+  right: 30px;
+  left: auto;
+  justify-content: flex-end;
+}
+
+
+
+.product-img-wrapper img {
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.product-img-wrapper.sold-out img {
+  filter: grayscale(100%) blur(1.2px);
+  opacity: 0.6;
+}
+
+
+/* Sold Out overlay */
+.product-img-wrapper {
+  position: relative;
+}
+
+.sold-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: red;
+  color: white;
+  font-weight: bold;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  z-index: 10;
 }
