@@ -21,8 +21,17 @@ async function getCurrentUserId() {
 function renderCarousel(images) {
   imageList = images;
   currentIndex = 0;
+
+  const prevBtn = document.getElementById("prevImgBtn");
+  const nextBtn = document.getElementById("nextImgBtn");
+
+  const showArrows = imageList.length > 1;
+  prevBtn.style.display = showArrows ? 'flex' : 'none';
+  nextBtn.style.display = showArrows ? 'flex' : 'none';
+
   updateCarousel();
 }
+
 
 function updateCarousel() {
   if (!imageList.length) return;
