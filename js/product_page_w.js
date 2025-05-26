@@ -44,15 +44,23 @@ function updateCarousel() {
   `).join('');
 }
 
-document.getElementById("prevImage").onclick = () => {
-  currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
-  updateCarousel();
-};
+document.addEventListener('DOMContentLoaded', () => {
+  const prevBtn = document.getElementById("prevImgBtn");
+  const nextBtn = document.getElementById("nextImgBtn");
 
-document.getElementById("nextImage").onclick = () => {
-  currentIndex = (currentIndex + 1) % imageList.length;
-  updateCarousel();
-};
+  if (prevBtn && nextBtn) {
+    prevBtn.onclick = () => {
+      currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
+      updateCarousel();
+    };
+
+    nextBtn.onclick = () => {
+      currentIndex = (currentIndex + 1) % imageList.length;
+      updateCarousel();
+    };
+  }
+});
+
 
 dots.onclick = (e) => {
   if (e.target.classList.contains("dot")) {
