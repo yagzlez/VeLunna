@@ -234,7 +234,7 @@ document.getElementById('modalClose').addEventListener('click', () => {
   document.getElementById('productModal').style.display = 'none';
 });
 
-const modalImgEl = document.getElementById('modalImg');
+
 const zoomBtn = document.getElementById('zoomToggleBtn');
 const zoomIcon = document.getElementById('zoomIcon');
 
