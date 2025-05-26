@@ -38,7 +38,12 @@
         <button class="modal-arrow" id="prevImgBtn">&lt;</button>
   
         <div class="image-container">
-          <img class="modal-img" id="modalImg" src="" alt="Product" />
+          <div class="zoom-wrapper">
+            <img class="modal-img" id="modalImg" src="" alt="Product" />
+            <button id="zoomToggleBtn" class="zoom-btn">
+              <img src="images/svg/magnifying_zoom_in.svg" alt="Zoom In" id="zoomIcon" />
+            </button>
+          </div>
           <div id="carouselDots" class="carousel-dots"></div>
         </div>
   
