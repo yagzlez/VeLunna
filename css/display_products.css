@@ -580,3 +580,32 @@ html {
   white-space: normal;
   line-height: 1.6;
 }
+
+.zoom-icon {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  z-index: 15;
+  opacity: 0.85;
+  transition: opacity 0.3s;
+}
+
+.zoom-icon:hover {
+  opacity: 1;
+}
+
+.zoom-panel {
+  display: none;
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border: 2px solid #333;
+  background-repeat: no-repeat;
+  background-size: 200%;
+  z-index: 100;
+  pointer-events: none;
+}
+
