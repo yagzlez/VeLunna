@@ -500,8 +500,7 @@ html {
   font-size: 24px;
   color: #000;
   cursor: pointer;
-  z-index: 99999; /* Ensure it's on top of everything */
-  background-color: white; /* Optional: add background for contrast */
+  z-index: 99999; 
   border-radius: 50%;
   padding: 5px;
 }
@@ -761,6 +760,7 @@ html {
 
   #modalTitle {
     font-size: 22px;
+    word-break: break-word;
   }
 
   #modalDescription {
@@ -778,5 +778,29 @@ html {
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
+  }
+}
+
+
+@media (min-width: 768px) {
+  .modal-close {
+    top: 20px;
+    right: 20px;
+  }
+
+  .modal-right {
+    padding: 40px 40px 30px 30px; /* extra space on right */
+  }
+}
+
+@media (max-width: 767px) {
+  .modal-close {
+    top: 15px;
+    right: 15px;
+    z-index: 20;
+  }
+
+  .modal-content-wrapper {
+    padding-top: 30px;
   }
 }
