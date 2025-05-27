@@ -225,7 +225,42 @@ html {
   text-align: center;
 }
 
+/* Newsletter full width */
+.newsletter {
+  width: 100vw;
+  padding: 80px 20px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  box-sizing: border-box;
+}
 
+.newsletter h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.newsletter p {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+}
+
+.subscribe-btn {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.subscribe-btn:hover {
+  background-color: #ddd;
+}
 
 /* Footer full width */
 .footer {
@@ -310,6 +345,8 @@ html {
   background: rgba(0,0,0,0.85);
   padding: 40px;
   box-sizing: border-box;
+  overflow-y: auto;
+  align-items: center;
 }
 
 .modal-content-wrapper {
@@ -326,6 +363,14 @@ html {
 @media (min-width: 768px) {
   .modal-content-wrapper {
     flex-direction: row;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-content-wrapper {
+    max-height: 90vh;
+    overflow-y: auto;
+    flex-direction: column;
   }
 }
 
@@ -408,6 +453,7 @@ html {
 
 .modal-buttons {
   display: flex;
+  justify-content: center;
   gap: 10px;
   margin-top: 20px;
 }
@@ -709,5 +755,13 @@ html {
 
   #modalPrice {
     font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-right {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
   }
 }
