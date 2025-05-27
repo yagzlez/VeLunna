@@ -25,6 +25,60 @@ html {
   z-index: 999;
 }
 
+#nav-login {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.welcome-container {
+  position: relative;
+  display: inline-block;
+}
+
+.welcome-toggle {
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  border-radius: 6px;
+  padding: 10px;
+  z-index: 1;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dropdown-menu.open {
+  display: flex;
+}
+
+.logout-button {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: #e04040;
+}
+
+
 .main-logo {
   max-width: 70%;
   height: auto;
