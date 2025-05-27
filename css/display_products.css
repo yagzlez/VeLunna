@@ -496,11 +496,20 @@ html {
 .modal-close {
   position: absolute;
   top: 20px;
-  right: 30px;
-  font-size: 2rem;
+  right: 20px;
+  font-size: 24px;
   color: #000;
   cursor: pointer;
+  z-index: 99999; /* Ensure it's on top of everything */
+  background-color: white; /* Optional: add background for contrast */
+  border-radius: 50%;
+  padding: 5px;
 }
+
+.modal-close:hover {
+  background-color: #eee;
+}
+
 
 /*login button*/
 .nav-icons {
