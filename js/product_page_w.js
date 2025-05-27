@@ -210,7 +210,12 @@ document.addEventListener("DOMContentLoaded", () => {
         <p>${product.title}</p>
       `;
 
-      div.querySelector('img').addEventListener('click', () => openProductModal(product));
+      div.querySelector('img').addEventListener('click', () => {
+        if (!product || !product.title || !product.image_url) return;
+        console.log("Opening modal for:", product);
+        openProductModal(product);
+      });
+
       gallery.appendChild(div);
     });
   }
