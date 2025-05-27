@@ -155,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function openProductModal(product) {
+    if (!product || !product.id) return;
     modal.setAttribute('data-product-id', product.id);
     modal.setAttribute('data-product-table', 'Products_Women');
     await loadVariant(product.id);
@@ -181,6 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     modal.style.display = 'block';
   }
+  
 
   async function loadProducts() {
     gallery.innerHTML = '';
