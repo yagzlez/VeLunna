@@ -177,6 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
     variantButtons.innerHTML = '';
     if (variants && variants.length > 1) {
       variantSection.style.display = 'block';
+      modal.querySelector('.modal-right')?.classList.add('has-variants');
       variants.forEach(variant => {
         const btn = document.createElement('img');
         btn.src = variant.image_url;
@@ -186,7 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } else {
       variantSection.style.display = 'none';
+      modal.querySelector('.modal-right')?.classList.remove('has-variants');
     }
+
 
     modal.style.display = 'block';
   }
