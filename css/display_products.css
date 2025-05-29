@@ -1614,4 +1614,10 @@ html {
   }
 }
 
+@media (min-width: 1024px) {
+  .modal-right.has-variants {
+    padding-bottom: 50px;
+  }
+}
+
 
