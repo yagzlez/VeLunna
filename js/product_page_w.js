@@ -121,53 +121,46 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadVariant(productId) {
-  const { data: product, error } = await supabase
-    .from('Products_Women')
-    .select('*')
-    .eq('id', productId)
-    .single();
-
-  if (error) {
-    console.error("Failed to load variant:", error);
-    return;
-  }
-
-  if (!product) {
-    console.warn("No product found for ID", productId);
-    return;
-  }
-
-  modal.setAttribute('data-product-id', product.id);
-
-  const images = [product.image_url].concat(product.images?.split(',').map(img => img.trim()) || []);
-  renderCarousel(images);
-
-  document.getElementById('modalTitle').textContent = product.title || 'Untitled';
-  document.getElementById('modalDescription').innerHTML = product.description || 'No description available.';
-  document.getElementById('modalPrice').textContent = product.price ? `£${product.price.toFixed(2)}` : '£N/A';
-
-  populateSizes(product);
-
-  const basketBtn = document.querySelector('.basket-btn');
-  basketBtn.style.display = product.stock === 0 ? 'none' : 'block';
-  basketBtn.onclick = handleBasketClick;
-
-  const wishlistBtn = document.querySelector('.wishlist-btn');
-  const userId = await getCurrentUserId();
-  if (userId) {
-    const { data: existing } = await supabase
-      .from('Wishlist')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('product_id', product.id)
-      .eq('product_table', 'Products_Women')
+    const { data: product, error } = await supabase
+      .from('Products_Women')
+      .select('*')
+      .eq('id', productId)
       .single();
-    wishlistBtn.textContent = existing ? "♥ Remove from Wishlist" : "♡ Add to Wishlist";
+
+    if (error || !product) {
+      console.error("❌ Failed to load variant:", error || "No data found");
+      return;
+    }
+
+    modal.setAttribute('data-product-id', product.id);
+    const images = [product.image_url].concat(product.images?.split(',').map(img => img.trim()) || []);
+    renderCarousel(images);
+
+    document.getElementById('modalTitle').textContent = product.title || 'Untitled';
+    document.getElementById('modalDescription').innerHTML = product.description || 'No description available.';
+    document.getElementById('modalPrice').textContent = product.price ? `£${product.price.toFixed(2)}` : '£N/A';
+
+    populateSizes(product);
+
+    const basketBtn = document.querySelector('.basket-btn');
+    basketBtn.style.display = product.stock === 0 ? 'none' : 'block';
+    basketBtn.onclick = handleBasketClick;
+
+    const wishlistBtn = document.querySelector('.wishlist-btn');
+    const userId = await getCurrentUserId();
+    if (userId) {
+      const { data: existing } = await supabase
+        .from('Wishlist')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('product_id', product.id)
+        .eq('product_table', 'Products_Women')
+        .single();
+      wishlistBtn.textContent = existing ? "♥ Remove from Wishlist" : "♡ Add to Wishlist";
+    }
+
+    wishlistBtn.onclick = handleWishlistClick;
   }
-
-  wishlistBtn.onclick = handleWishlistClick;
-}
-
 
   async function openProductModal(product) {
     if (!product || !product.id) return;
@@ -197,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     modal.style.display = 'block';
   }
-  
 
   async function loadProducts() {
     gallery.innerHTML = '';
@@ -213,6 +205,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     products.forEach(product => {
+      if (!product || !product.image_url || !product.title || !product.id) {
+        console.warn("⚠️ Skipping broken product:", product);
+        return;
+      }
+
       const div = document.createElement('div');
       div.className = 'product';
       const isSoldOut = product.stock === 0;
@@ -226,10 +223,9 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
 
       div.querySelector('img').addEventListener('click', () => {
-         if (!product || !product.id || !product.title) return;
+        console.log("🖱️ Clicked:", product.title);
         openProductModal(product);
       });
-
 
       gallery.appendChild(div);
     });
@@ -237,9 +233,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById('modalClose')?.addEventListener('click', () => {
     modal.style.display = 'none';
+    modal.removeAttribute('data-product-id');
+    modalImgEl.src = '';
+    document.getElementById('modalTitle').textContent = '';
+    document.getElementById('modalDescription').innerHTML = '';
+    document.getElementById('modalPrice').textContent = '';
   });
 
-  // Zoom functionality
+  // Zoom
   const zoomBtn = document.getElementById('zoomToggleBtn');
   const zoomIcon = document.getElementById('zoomIcon');
   const zoomPanel = document.getElementById('zoomPanel');
@@ -266,7 +267,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const rect = modalImgEl.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-
     zoomPanel.style.display = 'block';
     zoomPanel.style.left = `${e.pageX + 20}px`;
     zoomPanel.style.top = `${e.pageY - 100}px`;
