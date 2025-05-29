@@ -238,6 +238,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   gallery.appendChild(div);
+  if (!product || !product.image_url || !product.title || product.stock === 0) {
+  return; // prevent ghost modal triggers
+}
 });
 
     
