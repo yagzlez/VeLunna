@@ -192,52 +192,53 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadProducts() {
-    gallery.innerHTML = '';
-    const { data: products } = await supabase
-      .from('Products_Women')
-      .select('*')
-      .eq('is_available', true)
-      .eq('is_main_variant', true);
+  gallery.innerHTML = '';
+  const { data: products } = await supabase
+    .from('Products_Women')
+    .select('*')
+    .eq('is_available', true)
+    .eq('is_main_variant', true);
 
-    if (!products || products.length === 0) {
-      gallery.innerHTML = '<p>No products available.</p>';
-      return;
-    }
-
-    products.forEach(product => {
-  if (
-    !product || 
-    !product.id || 
-    !product.title || 
-    !product.image_url || 
-    product.is_main_variant !== true
-  ) {
-    console.warn("⚠️ Skipping invalid product:", product);
+  if (!products || products.length === 0) {
+    gallery.innerHTML = '<p>No products available.</p>';
     return;
   }
 
-  const div = document.createElement('div');
-  div.className = 'product';
-  const isSoldOut = product.stock === 0;
+  products.forEach(product => {
+    if (
+      !product || 
+      !product.id || 
+      !product.title || 
+      !product.image_url || 
+      product.is_main_variant !== true
+    ) {
+      console.warn("⚠️ Skipping invalid product:", product);
+      return;
+    }
 
-  div.innerHTML = `
-    <div class="product-img-wrapper ${isSoldOut ? 'sold-out' : ''}">
-      <img src="${product.image_url}" alt="${product.title}">
-      ${isSoldOut ? '<div class="sold-overlay">SOLD OUT</div>' : ''}
-    </div>
-    <p>${product.title}</p>
-  `;
+    const div = document.createElement('div');
+    div.className = 'product';
+    const isSoldOut = product.stock === 0;
 
-  const img = div.querySelector('img');
-  if (img) {
-    img.addEventListener('click', () => {
-      console.log("🖱️ Clicked:", product.title);
-      openProductModal(product);
-    });
-  }
+    div.innerHTML = `
+      <div class="product-img-wrapper ${isSoldOut ? 'sold-out' : ''}">
+        <img src="${product.image_url}" alt="${product.title}">
+        ${isSoldOut ? '<div class="sold-overlay">SOLD OUT</div>' : ''}
+      </div>
+      <p>${product.title}</p>
+    `;
 
-  gallery.appendChild(div); // ✅ Fix here
-});
+    const img = div.querySelector('img');
+    if (img) {
+      img.addEventListener('click', () => {
+        console.log("🖱️ Clicked:", product.title);
+        openProductModal(product);
+      });
+    }
+
+    gallery.appendChild(div); // ✅ Make sure this line is here
+  });
+}
 
 
 
