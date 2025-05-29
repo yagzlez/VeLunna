@@ -228,7 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
     <p>${product.title}</p>
   `;
 
-  // ✅ Only attach listener if product is safe
   const img = div.querySelector('img');
   if (img) {
     img.addEventListener('click', () => {
@@ -236,10 +235,11 @@ document.addEventListener("DOMContentLoaded", () => {
       openProductModal(product);
     });
   }
+
+  gallery.appendChild(div); // ✅ Fix here
 });
 
-    
-  }
+
 
   document.getElementById('modalClose')?.addEventListener('click', () => {
     modal.style.display = 'none';
