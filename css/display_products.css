@@ -1613,3 +1613,7 @@ html {
     padding-top: 30px;
   }
 }
+
+#productModal {
+  display: none !important;
+}
