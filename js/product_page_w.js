@@ -205,30 +205,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     products.forEach(product => {
-      if (!product || !product.image_url || !product.title || !product.id) {
-        console.warn("⚠️ Skipping broken product:", product);
-        return;
-      }
+  if (
+    !product || 
+    !product.id || 
+    !product.title || 
+    !product.image_url || 
+    product.is_main_variant !== true
+  ) {
+    console.warn("⚠️ Skipping invalid product:", product);
+    return;
+  }
 
-      const div = document.createElement('div');
-      div.className = 'product';
-      const isSoldOut = product.stock === 0;
+  const div = document.createElement('div');
+  div.className = 'product';
+  const isSoldOut = product.stock === 0;
 
-      div.innerHTML = `
-        <div class="product-img-wrapper ${isSoldOut ? 'sold-out' : ''}">
-          <img src="${product.image_url}" alt="${product.title}">
-          ${isSoldOut ? '<div class="sold-overlay">SOLD OUT</div>' : ''}
-        </div>
-        <p>${product.title}</p>
-      `;
+  div.innerHTML = `
+    <div class="product-img-wrapper ${isSoldOut ? 'sold-out' : ''}">
+      <img src="${product.image_url}" alt="${product.title}">
+      ${isSoldOut ? '<div class="sold-overlay">SOLD OUT</div>' : ''}
+    </div>
+    <p>${product.title}</p>
+  `;
 
-      div.querySelector('img').addEventListener('click', () => {
-        console.log("🖱️ Clicked:", product.title);
-        openProductModal(product);
-      });
-
-      gallery.appendChild(div);
+  // ✅ Only attach listener if product is safe
+  const img = div.querySelector('img');
+  if (img) {
+    img.addEventListener('click', () => {
+      console.log("🖱️ Clicked:", product.title);
+      openProductModal(product);
     });
+  }
+
+  gallery.appendChild(div);
+});
+
+    
   }
 
   document.getElementById('modalClose')?.addEventListener('click', () => {
