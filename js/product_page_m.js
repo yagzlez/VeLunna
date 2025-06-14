@@ -48,14 +48,27 @@ async function handleWishlistClick() {
 
 async function handleBasketClick() {
   const userId = await getCurrentUserId();
-  if (!userId) {
-    alert("Please log in to add items to the basket.");
-    return;
-  }
+  if (!userId) return alert("Please log in to add items to the basket.");
 
-  const productId = document.getElementById('productModal').getAttribute('data-product-id');
+  const productId = modal.getAttribute('data-product-id');
   const size = document.getElementById('sizeSelect').value;
 
+  // Fetch current stock before inserting
+  const { data: product, error: stockError } = await supabase
+    .from('Products_Women')
+    .select('stock')
+    .eq('id', productId)
+    .single();
+
+  if (stockError || !product) {
+    return alert("⚠️ Failed to fetch stock.");
+  }
+
+  if (product.stock <= 0) {
+    return alert("❌ This item is sold out.");
+  }
+
+  // Check if item already in basket
   const { data: existingItem } = await supabase
     .from('Basket')
     .select('id, quantity')
@@ -65,17 +78,26 @@ async function handleBasketClick() {
     .single();
 
   if (existingItem) {
-    await supabase
-      .from('Basket')
-      .update({ quantity: existingItem.quantity + 1 })
-      .eq('id', existingItem.id);
-    alert("🔁 Quantity updated in basket.");
+    await supabase.from('Basket').update({
+      quantity: existingItem.quantity + 1
+    }).eq('id', existingItem.id);
   } else {
-    await supabase
-      .from('Basket')
-      .insert([{ user_id: userId, product_id: productId, size, quantity: 1 }]);
-    alert("✅ Added to basket!");
+    await supabase.from('Basket').insert([{
+      user_id: userId,
+      product_id: productId,
+      size,
+      quantity: 1
+    }]);
   }
+
+  // ↓↓↓ Decrease the stock by 1 ↓↓↓
+  await supabase
+    .from('Products_Women')
+    .update({ stock: product.stock - 1 })
+    .eq('id', productId);
+
+  alert("✅ Added to basket!");
+  loadVariant(productId); // Reload modal to reflect updated stock
 }
 
 async function loadProducts() {
